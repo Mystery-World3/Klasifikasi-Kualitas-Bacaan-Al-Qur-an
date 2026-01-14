@@ -7,12 +7,11 @@ from src.model import ClassifierModel
 from src.utils import AudioUtil
 
 # ==========================================
-# 1. KONFIGURASI & LOAD MODEL
+# 1. CONFIGURATION & LOAD MODEL
 # ==========================================
 MODEL_PATH = "models/final_model_skripsi.pth"
 LABELS = ['Mumtaz', 'Jayyid Jiddan', 'Jayyid', 'Maqbul', 'Rosib']
 
-# Dictionary untuk menerjemahkan nilai ke bahasa manusia yang lebih ramah
 PESAN_PENJELASAN = {
     "Mumtaz": "Luar Biasa! Bacaan sangat fasih dan tajwid sempurna.",
     "Jayyid Jiddan": "Sangat Baik. Bacaan lancar, hanya ada kesalahan sangat kecil.",
@@ -38,8 +37,8 @@ def predict_audio_file(file_path, model, device):
     sig = AudioUtil.rechannel(sig)
     sig = AudioUtil.pad_trunc(sig, Config.N_SAMPLES)
     input_tensor = torch.tensor(sig, dtype=torch.float32).unsqueeze(0).to(device)
-    
-    # Prediksi
+
+    # Prediction
     with torch.no_grad():
         logits = model(input_tensor)
         probs = F.softmax(logits, dim=1)
@@ -49,12 +48,12 @@ def predict_audio_file(file_path, model, device):
     return hasil
 
 # ==========================================
-# 2. TAMPILAN ANTARMUKA (UI)
+# 2. USER INTERTACE (UI)
 # ==========================================
 st.title("🎙️ Sistem Penilai Tahsin Otomatis")
 st.write("Upload rekaman suara Anda, dan AI akan menilai kualitas bacaannya.")
 
-# Load Model di awal
+# Load Model at the beginning
 model, device = load_model()
 
 if model is None:
