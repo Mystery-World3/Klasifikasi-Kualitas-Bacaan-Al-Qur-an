@@ -22,10 +22,10 @@ class AudioUtil:
         """Memotong (Truncate) atau Menambah (Pad) durasi audio agar seragam"""
         num_rows, sig_len = sig.shape
         if sig_len > max_len:
-            # Potong jika kepanjangan
+            # cut if it's too long
             sig = sig[:, :max_len]
         elif sig_len < max_len:
-            # Tambah nol (padding) jika kependekan
+            # Add padding if it's too short
             pad_begin_len = np.random.randint(0, max_len - sig_len)
             pad_end_len = max_len - sig_len - pad_begin_len
             pad_begin = np.zeros((num_rows, pad_begin_len))

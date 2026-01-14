@@ -19,14 +19,14 @@ class NTXentLoss(nn.Module):
         """
         batch_size = z_i.shape[0]
         
-        # Gabungkan kedua view
+        # combines both views
         # Representations: [2*Batch, 128]
         representations = torch.cat([z_i, z_j], dim=0)
         
-        # Hitung kemiripan (Cosine Similarity) antar semua sampel
+        # Calculate the similarity (Cosine Similarity) between all samples
         similarity_matrix = F.cosine_similarity(representations.unsqueeze(1), representations.unsqueeze(0), dim=2)
         
-        # SimCLR logic (Masking diagonal sendiri)
+        # SimCLR logic (Self-diagonal masking)
         sim_ij = torch.diag(similarity_matrix, batch_size)
         sim_ji = torch.diag(similarity_matrix, -batch_size)
         
@@ -34,7 +34,7 @@ class NTXentLoss(nn.Module):
         
         nominator = torch.exp(positives / self.temperature)
         
-        # Denominator: Sum semua exp similarity kecuali diri sendiri
+        # Denominator: Sum of all exp similarity except self
         mask = (~torch.eye(batch_size * 2, batch_size * 2, dtype=torch.bool, device=z_i.device)).float()
         denominator = mask * torch.exp(similarity_matrix / self.temperature)
         all_losses = -torch.log(nominator / torch.sum(denominator, dim=1))

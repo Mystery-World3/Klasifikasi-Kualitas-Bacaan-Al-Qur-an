@@ -60,28 +60,28 @@ model, device = load_model()
 if model is None:
     st.error("Model tidak ditemukan! Pastikan file model ada di folder 'models/'.")
 else:
-    # Komponen Upload File
+    # File Upload Component
     uploaded_file = st.file_uploader("Pilih file audio (.wav)", type=["wav"])
 
     if uploaded_file is not None:
-        # Tampilkan Audio Player agar user bisa dengar dulu
+        # Show Audio Player so user can listen
         st.audio(uploaded_file, format='audio/wav')
 
         if st.button("🔍 Nilai Bacaan Saya"):
             with st.spinner('Sedang mendengarkan dan menganalisis...'):
-                # Simpan file sementara agar bisa dibaca library AudioUtil
+                # Save a temporary file so that it can be read by the AudioUtil library.
                 temp_filename = "temp_audio.wav"
                 with open(temp_filename, "wb") as f:
                     f.write(uploaded_file.getbuffer())
                 
-                # Proses Prediksi
+                # Prediction Process
                 hasil_prediksi = predict_audio_file(temp_filename, model, device)
                 
-                # TAMPILKAN HASIL YANG RAMAH PENGGUNA
+                # SHOW RESULTS
                 st.markdown("---")
                 st.subheader("Hasil Penilaian:")
                 
-                # Logika warna agar menarik
+                # Color logic
                 if hasil_prediksi == "Mumtaz":
                     st.success(f"🌟 **{hasil_prediksi}**")
                 elif hasil_prediksi in ["Jayyid Jiddan", "Jayyid"]:
@@ -89,8 +89,8 @@ else:
                 else:
                     st.warning(f"⚠️ **{hasil_prediksi}**")
                 
-                # Tampilkan pesan penjelasan (bukan angka persen)
+                # displays an explanatory message
                 st.write(f"📝 *Keterangan: {PESAN_PENJELASAN[hasil_prediksi]}*")
                 
-                # Hapus file temporary
+                # delete temporary files
                 os.remove(temp_filename)

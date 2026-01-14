@@ -8,7 +8,7 @@ from src.model import ClassifierModel
 from src.utils import AudioUtil
 
 # ==========================================
-# 1. cCONFIGURATION
+# 1. CONFIGURATION
 # ==========================================
 INPUT_FOLDER = "data/unlabeled/Nasser_Alqutami"       
 OUTPUT_CSV = "laporan_hasil_prediksi.csv"  

@@ -12,7 +12,7 @@ class ContrastivePretrainDataset(Dataset):
     Output: (View1, View2) -> Dua versi augmentasi dari audio yang sama.
     """
     def __init__(self, data_path):
-        # Mencari semua file .wav di folder
+        # Search for all .wav files in the folder
         self.files = glob.glob(os.path.join(data_path, "*.wav"))
         if len(self.files) == 0:
             print(f"Peringatan: Tidak ada file .wav ditemukan di {data_path}")
@@ -28,15 +28,13 @@ class ContrastivePretrainDataset(Dataset):
         sig = AudioUtil.rechannel(sig)
         sig = AudioUtil.pad_trunc(sig, Config.N_SAMPLES)
         
-        # 2. Buat View 1 (Augmentasi Pertama)
-        # Misal: Geser waktu
+        # 2. create View 1 (First Augmentation)
         aug1 = AudioUtil.time_shift(sig)
         aug1 = torch.tensor(aug1, dtype=torch.float32)
 
-        # 3. Buat View 2 (Augmentasi Kedua)
-        # Misal: Tambah noise + Geser waktu
+        # 3. create View 2 (Augmentasi Kedua)
         aug2 = AudioUtil.add_noise(sig)
-        aug2 = AudioUtil.time_shift(aug2) # Augmentasi bertumpuk
+        aug2 = AudioUtil.time_shift(aug2) 
         aug2 = torch.tensor(aug2, dtype=torch.float32)
 
         return aug1, aug2
@@ -49,12 +47,12 @@ class FineTuneDataset(Dataset):
     def __init__(self, data_path):
         self.files = []
         self.labels = []
-        # Mapping label folder ke angka
+        # Mapping folder labels to numbers
         self.class_map = {
             'mumtaz': 0, 'jayyid_jiddan': 1, 'jayyid': 2, 'maqbul': 3, 'rosib': 4
         }
         
-        # Loop setiap folder kelas
+        # Loop each class folder
         for class_name, label_idx in self.class_map.items():
             folder_path = os.path.join(data_path, class_name)
             wav_files = glob.glob(os.path.join(folder_path, "*.wav"))
@@ -68,7 +66,7 @@ class FineTuneDataset(Dataset):
         audio_file = self.files[idx]
         label = self.labels[idx]
         
-        # Load Audio (Tanpa Augmentasi ekstrim saat testing, cukup standardisasi)
+        # Load Audio
         sig = AudioUtil.open_audio(audio_file, Config.SAMPLE_RATE)
         sig = AudioUtil.rechannel(sig)
         sig = AudioUtil.pad_trunc(sig, Config.N_SAMPLES)

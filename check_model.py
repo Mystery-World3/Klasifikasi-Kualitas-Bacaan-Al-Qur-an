@@ -5,12 +5,12 @@ from src.config import Config
 
 def test_contrastive_model():
     print("--- Cek Model Pre-training (Contrastive) ---")
-    # Buat data dummy (pura-pura audio): Batch 4, Channel 1, Panjang 48000
+    # Create dummy data : Batch 4, Channel 1, Panjang 48000
     dummy_input = torch.randn(4, 1, Config.N_SAMPLES)
     
     model = ContrastiveModel()
     
-    # Masukkan data ke model
+    # Enter data into the model
     features, projections = model(dummy_input)
     
     print(f"Input Shape: {dummy_input.shape}")
@@ -22,7 +22,6 @@ def test_classifier_model():
     print("--- Cek Model Fine-tuning (Classifier) ---")
     dummy_input = torch.randn(4, 1, Config.N_SAMPLES)
     
-    # Pura-pura kita punya 5 kelas (Mumtaz-Rosib)
     model = ClassifierModel(num_classes=5)
     
     output = model(dummy_input)

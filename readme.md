@@ -28,18 +28,18 @@ Pastikan struktur folder Anda terlihat seperti ini:
 
 ```text
 ├── data/
-│   └── unlabeled/       # Letakkan file .wav yang ingin dites di sini
+│   └── unlabeled/      
 ├── models/
-│   └── final_model_skripsi.pth  # File bobot model (weights)
+│   └── final_model_skripsi.pth  
 ├── src/
-│   ├── config.py        # Konfigurasi audio (Sample Rate, Mel Spectrogram, dll)
-│   ├── model.py         # Arsitektur Neural Network
-│   └── utils.py         # Modul preprocessing audio
-├── app_demo.py          # Script Web App (Streamlit)
-├── batch_predict.py     # Script prediksi massal (Output CSV)
-├── predict.py           # Script prediksi CLI sederhana
-├── requirements.txt     # Daftar library python
-└── README.md            # Dokumentasi ini
+│   ├── config.py        
+│   ├── model.py         
+│   └── utils.py        
+├── app_demo.py          
+├── batch_predict.py    
+├── predict.py          
+├── requirements.txt     
+└── README.md           
 
 ```
 
@@ -128,7 +128,3 @@ python predict.py
 
 * Program Studi Teknik Informatika
 * Universitas Darussalam Gontor
-
-```
-
-```

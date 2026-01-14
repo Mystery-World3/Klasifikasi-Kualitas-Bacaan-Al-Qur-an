@@ -14,14 +14,14 @@ def test_pretrain_loader():
 
     loader = DataLoader(dataset, batch_size=2, shuffle=True)
     
-    # Ambil 1 batch
+    # Take 1 batch
     view1, view2 = next(iter(loader))
     
     print(f"Jumlah Data: {len(dataset)}")
     print(f"Shape View 1: {view1.shape} (Batch, Channel, Samples)")
     print(f"Shape View 2: {view2.shape}")
     
-    # Validasi Contrastive: View 1 dan View 2 tidak boleh persis sama isinya (karena augmentasi)
+    # Contrastive Validation: View 1 and View 2 must not have exactly the same content
     is_same = torch.allclose(view1, view2)
     print(f"Apakah View 1 persis sama dengan View 2? {is_same} (Harusnya False)")
     print("Sukses!\n")
@@ -43,7 +43,6 @@ def test_finetune_loader():
     print("Sukses!\n")
 
 if __name__ == "__main__":
-    # Pastikan kamu sudah menaruh minimal 1 file .wav dummy di folder data
-    # untuk mengetes kode ini.
+   
     test_pretrain_loader()
     test_finetune_loader()

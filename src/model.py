@@ -11,7 +11,7 @@ class AudioEncoder(nn.Module):
     def __init__(self):
         super(AudioEncoder, self).__init__()
         
-        # Layer 1: Stride besar untuk mengurangi dimensi audio yang panjang
+        # Layer 1: Large stride to reduce long audio dimensions
         # Input: [Batch, 1, 48000]
         self.conv1 = nn.Conv1d(1, 128, kernel_size=80, stride=4)
         self.bn1 = nn.BatchNorm1d(128)
@@ -32,7 +32,7 @@ class AudioEncoder(nn.Module):
         self.bn4 = nn.BatchNorm1d(512)
         self.pool4 = nn.MaxPool1d(4)
 
-        # Global Average Pooling (Meratakan fitur waktu menjadi satu vektor)
+        # Global Average Pooling 
         self.gap = nn.AdaptiveAvgPool1d(1)
 
         # Output Features dimension
@@ -55,8 +55,8 @@ class AudioEncoder(nn.Module):
         x = F.relu(self.bn4(x))
         x = self.pool4(x)
 
-        x = self.gap(x) # [Batch, 512, 1]
-        x = x.squeeze(-1) # [Batch, 512]
+        x = self.gap(x) 
+        x = x.squeeze(-1) 
         return x
 
 class ContrastiveModel(nn.Module):
@@ -69,7 +69,7 @@ class ContrastiveModel(nn.Module):
         self.encoder = AudioEncoder()
         
         # Projection Head: Mengubah fitur 512 menjadi 128 untuk loss function
-        # Ini teknik standar SimCLR agar representasi lebih bagus.
+        # This is a standard SimCLR technique for better representation.
         self.projection = nn.Sequential(
             nn.Linear(512, 256),
             nn.ReLU(),
@@ -79,7 +79,7 @@ class ContrastiveModel(nn.Module):
     def forward(self, x):
         features = self.encoder(x)
         projections = self.projection(features)
-        # Normalisasi vektor agar panjangnya = 1 (Penting untuk Contrastive Loss)
+        # Normalize the vector so that its length = 1
         projections = F.normalize(projections, dim=1)
         return features, projections
 
@@ -90,14 +90,14 @@ class ClassifierModel(nn.Module):
     """
     def __init__(self, encoder=None, num_classes=5):
         super(ClassifierModel, self).__init__()
-        # Jika ada encoder pre-trained, pakai itu. Jika tidak, buat baru.
+        # If there is a pre-trained encoder, use it. If not, create a new one.
         self.encoder = encoder if encoder else AudioEncoder()
         
         # Classification Head: 512 -> 5 Kelas (Mumtaz s.d Rosib)
         self.classifier = nn.Sequential(
             nn.Linear(512, 256),
             nn.ReLU(),
-            nn.Dropout(0.2), # Mencegah overfitting
+            nn.Dropout(0.2), # Prevent overfitting
             nn.Linear(256, num_classes)
         )
 
