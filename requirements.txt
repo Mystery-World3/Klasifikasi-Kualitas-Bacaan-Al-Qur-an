@@ -1,0 +1,27 @@
+# Deep Learning Framework
+torch
+torchaudio
+torchvision
+
+# Audio Processing
+librosa
+soundfile
+audiomentations
+numpy
+scipy
+
+# Data Manipulation & Analysis
+pandas
+scikit-learn
+openpyxl
+
+# Web App / UI (Streamlit)
+streamlit
+watchdog
+
+# Visualization (Opsional, untuk plot grafik)
+matplotlib
+seaborn
+
+# Utilities
+tqdm
