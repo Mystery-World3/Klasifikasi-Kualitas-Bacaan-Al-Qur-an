@@ -1,13 +1,3 @@
-Berikut adalah perbaikan kode `README.md` Anda.
-
-**Masalah utama pada kode lama Anda adalah:**
-
-1. **Code Block tidak ditutup (`````):** Di bagian Struktur Direktori dan Cara Penggunaan, Anda membuka kotak kode tapi lupa menutupnya, sehingga tampilan di bawahnya rusak.
-2. **Format Link dalam Code Block:** Di bagian `git clone`, Anda menggunakan format link `[url](url)`, padahal di dalam kotak hitam (terminal) seharusnya hanya link biasa.
-
-Silakan **Copy** kode bersih di bawah ini dan **Paste** (timpa semua) ke file `README.md` Anda:
-
-```markdown
 # 🎙️ Klasifikasi Kualitas Bacaan Al-Qur'an (Tahsin AI)
 
 > **Skripsi:** Representasi Fitur Audio Tahsin Qiroah Menggunakan Semi-Supervised Contrastive Learning.
