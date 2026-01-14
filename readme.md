@@ -8,6 +8,10 @@
 
 Proyek ini adalah sistem berbasis **Deep Learning** yang dikembangkan untuk mengklasifikasikan kualitas bacaan Al-Qur'an (Tahsin) secara otomatis. Sistem ini mampu menganalisis file audio dan memberikan penilaian berdasarkan standar makhorijul huruf dan tajwid.
 
+## 🌐 Live Demo
+Cobalah aplikasi ini secara langsung tanpa perlu instalasi:
+👉 **[Klik di sini untuk mencoba Aplikasi](https://klasifikasi-kualitas-bacaan-al-quran.streamlit.app/)**
+
 ## 📋 Fitur Utama
 
 Sistem ini mengklasifikasikan audio ke dalam 5 kategori kualitas:
