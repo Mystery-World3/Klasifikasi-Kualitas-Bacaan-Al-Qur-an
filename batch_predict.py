@@ -76,4 +76,4 @@ if __name__ == "__main__":
         if results:
             df = pd.DataFrame(results)
             df.to_csv(OUTPUT_CSV, index=False)
-            print(f"\n✅ Selesai! Cek file: {OUTPUT_CSV}")  
+            print(f"\n✅ Selesai! Cek file: {OUTPUT_CSV}")
