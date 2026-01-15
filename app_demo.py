@@ -6,7 +6,7 @@ from src.config import Config
 from src.model import ContrastiveModel  
 from src.utils import AudioUtil
 
-# KONFIGURASI
+# konfiguration
 MODEL_PATH = "models/final_model_skripsi.pth"
 LABELS = ['Mumtaz', 'Jayyid Jiddan', 'Jayyid', 'Maqbul', 'Rosib']
 
@@ -38,7 +38,6 @@ def load_model():
         return None, None
 
 def predict_audio(file_path, model, device):
-    # Tidak perlu add_noise saat prediksi
     input_tensor = AudioUtil.preprocess(file_path, add_noise=False)
     
     if input_tensor is None:
@@ -56,7 +55,6 @@ def predict_audio(file_path, model, device):
     
     return class_name, confidence
 
-# --- TAMPILAN WEB ---
 st.set_page_config(page_title="Tahsin AI", page_icon="🎙️")
 st.title("🎙️ Analisis Kualitas Bacaan Al-Qur'an (Contrastive AI)")
 st.markdown("Sistem ini menggunakan **Semi-Supervised Contrastive Learning** untuk hasil yang lebih akurat.")
