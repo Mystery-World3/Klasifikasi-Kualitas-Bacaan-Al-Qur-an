@@ -12,7 +12,7 @@ class Config:
     HOP_LENGTH = 512
     
     # --- Training Settings ---
-    BATCH_SIZE = 16         # Kurangi jika memory error
+    BATCH_SIZE = 16         
     LEARNING_RATE = 0.001
     EPOCHS_PRETRAIN = 5     # Epoch  Stage 1 
     EPOCHS_FINETUNE = 20    # Epoch  Stage 2

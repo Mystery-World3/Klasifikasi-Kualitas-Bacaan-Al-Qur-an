@@ -14,20 +14,20 @@ class ContrastiveModel(nn.Module):
         # Ubah input channel jadi 1 (karena Spectrogram hitam putih)
         self.backbone.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
         
-        # Ambil jumlah fitur sebelum layer terakhir (biasanya 512)
+        # Take the number of features before the last layer (usually 512)
         num_features = self.backbone.fc.in_features
         
-        # Hapus FC asli
+        # Delete original FC
         self.backbone.fc = nn.Identity()
 
-        # 2. Projection Head (Dipakai saat Stage 1: Pre-train)
+        # 2. Projection Head (Used on Stage 1: Pre-train)
         self.projection_head = nn.Sequential(
             nn.Linear(num_features, 256),
             nn.ReLU(),
             nn.Linear(256, 128)
         )
 
-        # 3. Classifier Head (Dipakai saat Stage 2: Fine-tune/Skripsi)
+        # 3. Classifier Head (Used on Stage 2: Fine-tune/Skripsi)
         # Tugas: Menentukan Mumtaz, Jayyid, dll.
         self.classifier_head = nn.Linear(num_features, num_classes)
 

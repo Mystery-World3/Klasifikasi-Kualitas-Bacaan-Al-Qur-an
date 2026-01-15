@@ -40,5 +40,5 @@ def main(audio_path):
 
 if __name__ == "__main__":
     # Ganti path ini untuk tes cepat
-    TEST_FILE = "data/unlabeled/012 Parco - Nero Suprobo.wav" 
+    TEST_FILE = "data/unlabeled/1.wav" 
     main(TEST_FILE)
