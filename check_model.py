@@ -1,15 +1,18 @@
 # check_model.py
 import torch
 from src.config import Config
-from src.model import ClassifierModel
+# UBAH: Import ContrastiveModel, bukan ClassifierModel
+from src.model import ContrastiveModel 
 
 def test_classifier_model():
     print("--- Cek Arsitektur Model (ResNet-18 Modified) ---")
     
     # 1. Inisialisasi Model
     try:
-        model = ClassifierModel(num_classes=5)
-        print("✅ Model berhasil diinisialisasi.")
+        # UBAH: Panggil ContrastiveModel dengan mode 'finetune'
+        # mode='finetune' artinya kita mengetes output klasifikasi (5 kelas)
+        model = ContrastiveModel(num_classes=5, mode='finetune')
+        print("✅ Model berhasil diinisialisasi (Mode: Finetune).")
     except Exception as e:
         print(f"❌ Gagal init model: {e}")
         return
