@@ -1,43 +1,44 @@
 # src/loss.py
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
 class NTXentLoss(nn.Module):
     """
     Normalized Temperature-scaled Cross Entropy Loss.
-    Ini adalah "Jantung" dari Contrastive Learning (SimCLR).
+    Digunakan untuk mengukur kemiripan antar representasi fitur.
     """
-    def __init__(self, temperature=0.5):
-        super(NTXentLoss, self).__init__()
+    def __init__(self, batch_size, temperature=0.5, device='cpu'):
+        super().__init__()
+        self.batch_size = batch_size
         self.temperature = temperature
+        self.device = device
+        self.criterion = nn.CrossEntropyLoss(reduction="sum")
+        self.similarity_f = nn.CosineSimilarity(dim=2)
+
+    def mask_correlated_samples(self, batch_size):
+        N = 2 * batch_size
+        mask = torch.ones((N, N), dtype=bool)
+        mask = mask.fill_diagonal_(0)
+        for i in range(batch_size):
+            mask[i, batch_size + i] = 0
+            mask[batch_size + i, i] = 0
+        return mask
 
     def forward(self, z_i, z_j):
-        """
-        z_i: Proyeksi dari View 1 (Batch, 128)
-        z_j: Proyeksi dari View 2 (Batch, 128)
-        """
-        batch_size = z_i.shape[0]
+        # z_i dan z_j adalah output vektor dari projection head
+        N = 2 * self.batch_size
+        z = torch.cat((z_i, z_j), dim=0)
+
+        sim = self.similarity_f(z.unsqueeze(1), z.unsqueeze(0)) / self.temperature
+
+        sim_i_j = torch.diag(sim, self.batch_size)
+        sim_j_i = torch.diag(sim, -self.batch_size)
         
-        # combines both views
-        # Representations: [2*Batch, 128]
-        representations = torch.cat([z_i, z_j], dim=0)
+        positive_samples = torch.cat((sim_i_j, sim_j_i), dim=0).reshape(N, 1)
+        negative_samples = sim[self.mask_correlated_samples(self.batch_size)].reshape(N, -1)
         
-        # Calculate the similarity (Cosine Similarity) between all samples
-        similarity_matrix = F.cosine_similarity(representations.unsqueeze(1), representations.unsqueeze(0), dim=2)
+        labels = torch.zeros(N).to(self.device).long()
+        logits = torch.cat((positive_samples, negative_samples), dim=1)
         
-        # SimCLR logic (Self-diagonal masking)
-        sim_ij = torch.diag(similarity_matrix, batch_size)
-        sim_ji = torch.diag(similarity_matrix, -batch_size)
-        
-        positives = torch.cat([sim_ij, sim_ji], dim=0)
-        
-        nominator = torch.exp(positives / self.temperature)
-        
-        # Denominator: Sum of all exp similarity except self
-        mask = (~torch.eye(batch_size * 2, batch_size * 2, dtype=torch.bool, device=z_i.device)).float()
-        denominator = mask * torch.exp(similarity_matrix / self.temperature)
-        all_losses = -torch.log(nominator / torch.sum(denominator, dim=1))
-        
-        loss = torch.sum(all_losses) / (2 * batch_size)
-        return loss
+        loss = self.criterion(logits, labels)
+        return loss / N

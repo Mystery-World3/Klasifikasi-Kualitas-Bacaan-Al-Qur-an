@@ -7,125 +7,85 @@ import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
 from src.config import Config
 from src.utils import AudioUtil
-from src.model import ClassifierModel
+from src.model import ContrastiveModel
 
-# ==========================================
-# 1. KONFIGURASI TRAINING
-# ==========================================
-DATASET_PATH = "data/labeled"                        
-MODEL_SAVE_PATH = "models/final_model_skripsi.pth"
+# Konfigurasi
+PRETRAINED_PATH = "models/encoder_pretrained.pth"
+FINAL_MODEL_PATH = "models/final_model_skripsi.pth"
 LABELS = ['Mumtaz', 'Jayyid Jiddan', 'Jayyid', 'Maqbul', 'Rosib']
-LABEL_MAP = {label: i for i, label in enumerate(LABELS)}
+LABEL_MAP = {l: i for i, l in enumerate(LABELS)}
 
-# ==========================================
-# 2. CUSTOM DATASET LOADER
-# ==========================================
-class QuranDataset(Dataset):
+class LabeledDataset(Dataset):
     def __init__(self, root_dir):
-        self.file_list = []
-        self.labels = []
-        
-        # Scan semua folder sub-direktori
-        print(f"🔄 Scanning dataset di: {root_dir}")
-        for label_name in LABELS:
-            folder_path = os.path.join(root_dir, label_name)
-            if not os.path.exists(folder_path):
-                print(f"⚠️ Peringatan: Folder '{label_name}' tidak ditemukan!")
-                continue
-                
-            files = glob.glob(os.path.join(folder_path, "*.wav"))
+        self.data = []
+        print(f"🔄 Scanning folder labeled di: {root_dir}")
+        for label in LABELS:
+            path = os.path.join(root_dir, label)
+            files = glob.glob(os.path.join(path, "*.wav"))
             for f in files:
-                self.file_list.append(f)
-                self.labels.append(LABEL_MAP[label_name])
-                
-        print(f"✅ Total data ditemukan: {len(self.file_list)} file.")
+                self.data.append((f, LABEL_MAP[label]))
+        print(f"📊 Stage 2: Ditemukan {len(self.data)} data labeled.")
 
-    def __len__(self):
-        return len(self.file_list)
-
+    def __len__(self): return len(self.data)
+    
     def __getitem__(self, idx):
-        audio_path = self.file_list[idx]
-        label = self.labels[idx]
-        
-        # Preprocessing (Audio -> Spectrogram Tensor)
-        # Menggunakan utils.py yang baru
-        spec_tensor = AudioUtil.preprocess(audio_path)
-        
-        # Handling jika audio rusak/gagal load
-        if spec_tensor is None:
-            # Return tensor kosong (akan di-skip di training loop idealnya, 
-            # tapi untuk simpel kita return random zeros)
-            spec_tensor = torch.zeros((1, Config.N_MELS, int(Config.N_SAMPLES/Config.HOP_LENGTH)+1))
-            
-        return spec_tensor, torch.tensor(label, dtype=torch.long)
+        path, label = self.data[idx]
+        tens = AudioUtil.preprocess(path, add_noise=False) # Tidak perlu noise saat fine-tune
+        if tens is None: tens = torch.zeros(1, Config.N_MELS, 130)
+        return tens, torch.tensor(label, dtype=torch.long)
 
-# ==========================================
-# 3. TRAINING LOOP
-# ==========================================
-def train():
-    # Cek Device (GPU/CPU)
+def train_finetune():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print(f"🚀 Memulai Training menggunakan: {device}")
+    print(f"🚀 Memulai Stage 2: Fine-Tuning di {device}")
     
-    # Load Dataset
-    dataset = QuranDataset(DATASET_PATH)
+    # 1. Setup Dataset
+    dataset = LabeledDataset(Config.LABELED_DIR)
     if len(dataset) == 0:
-        print("❌ Error: Tidak ada data file .wav ditemukan. Cek folder dataset!")
+        print("❌ Error: Data Labeled kosong. Cek folder data/labeled!")
         return
+    loader = DataLoader(dataset, batch_size=Config.BATCH_SIZE, shuffle=True)
 
-    dataloader = DataLoader(dataset, batch_size=Config.BATCH_SIZE, shuffle=True)
+    # 2. Init Model (Mode Finetune)
+    model = ContrastiveModel(num_classes=len(LABELS), mode='finetune').to(device)
     
-    # Inisialisasi Model ResNet18
-    model = ClassifierModel(num_classes=len(LABELS))
-    model.to(device)
-    model.train() # Mode training
-    
-    # Loss Function & Optimizer
+    # 3. Load Bobot dari Stage 1 (Transfer Learning)
+    if os.path.exists(PRETRAINED_PATH):
+        print("📥 Memuat bobot hasil Pre-training Contrastive Learning...")
+        state_dict = torch.load(PRETRAINED_PATH, map_location=device)
+        # strict=False karena kita mau load Backbone-nya saja, Classifier head-nya baru
+        model.load_state_dict(state_dict, strict=False) 
+    else:
+        print("⚠️ Warning: File pretrain tidak ditemukan. Training dari nol (Supervised Murni).")
+
+    # 4. Training Loop
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=Config.LEARNING_RATE)
     
-    # Loop Epoch
-    for epoch in range(Config.EPOCHS):
-        running_loss = 0.0
+    model.train()
+    for epoch in range(Config.EPOCHS_FINETUNE):
         correct = 0
         total = 0
+        total_loss = 0
         
-        print(f"\nEpoch [{epoch+1}/{Config.EPOCHS}]")
-        
-        for i, (inputs, targets) in enumerate(dataloader):
+        for inputs, targets in loader:
             inputs, targets = inputs.to(device), targets.to(device)
             
-            # Zero Gradients
             optimizer.zero_grad()
-            
-            # Forward Pass
             outputs = model(inputs)
             loss = criterion(outputs, targets)
-            
-            # Backward Pass & Optimize
             loss.backward()
             optimizer.step()
             
-            # Statistik Akurasi
-            running_loss += loss.item()
-            _, predicted = torch.max(outputs.data, 1)
+            total_loss += loss.item()
+            _, pred = torch.max(outputs, 1)
             total += targets.size(0)
-            correct += (predicted == targets).sum().item()
+            correct += (pred == targets).sum().item()
             
-            # Print progress setiap 5 batch
-            if (i+1) % 5 == 0:
-                print(f"   Batch {i+1}: Loss {loss.item():.4f}")
-
-        epoch_acc = 100 * correct / total
-        print(f"   👉 Selesai Epoch {epoch+1} | Loss Rata-rata: {running_loss/len(dataloader):.4f} | Akurasi: {epoch_acc:.2f}%")
-
-    # ==========================================
-    # 4. SIMPAN MODEL
-    # ==========================================
-    os.makedirs("models", exist_ok=True)
-    torch.save(model.state_dict(), MODEL_SAVE_PATH)
-    print(f"\n✅ Training Selesai! Model disimpan di: {MODEL_SAVE_PATH}")
-    print("Sekarang Anda bisa menjalankan 'app_demo.py' atau 'predict.py'.")
+        acc = 100 * correct / total
+        print(f"Epoch {epoch+1} | Loss: {total_loss/len(loader):.4f} | Akurasi: {acc:.2f}%")
+        
+    torch.save(model.state_dict(), FINAL_MODEL_PATH)
+    print(f"\n✅ Model Final Siap! Disimpan di: {FINAL_MODEL_PATH}")
 
 if __name__ == "__main__":
-    train()
+    train_finetune()
