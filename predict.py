@@ -1,29 +1,28 @@
 import argparse
 import torch
 import torch.nn.functional as F
-from src.model import ClassifierModel
+from src.model import ContrastiveModel  # <--- Ganti Import
 from src.utils import AudioUtil
 
-# SETUP
 MODEL_PATH = "models/final_model_skripsi.pth"
 LABELS = ['Mumtaz', 'Jayyid Jiddan', 'Jayyid', 'Maqbul', 'Rosib']
 
 def main(audio_path):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
-    # Load Model
-    model = ClassifierModel(num_classes=len(LABELS))
+    # <--- PERUBAHAN DI SINI
+    model = ContrastiveModel(num_classes=len(LABELS), mode='finetune')
+    
     try:
         model.load_state_dict(torch.load(MODEL_PATH, map_location=device))
         model.to(device)
         model.eval()
     except FileNotFoundError:
-        print("❌ Model tidak ditemukan. Harap training model terlebih dahulu.")
+        print("❌ Model belum dilatih! Jalankan train.py dulu.")
         return
 
-    # Preprocess & Predict
     print(f"🔍 Menganalisis: {audio_path}")
-    tensor = AudioUtil.preprocess(audio_path)
+    tensor = AudioUtil.preprocess(audio_path, add_noise=False)
     
     if tensor is not None:
         tensor = tensor.unsqueeze(0).to(device)
@@ -40,8 +39,6 @@ def main(audio_path):
         print("❌ Gagal memproses file audio.")
 
 if __name__ == "__main__":
-    # Contoh pemakaian: python predict.py
-    # Ganti path di bawah ini dengan file tes Anda
+    # Ganti path ini untuk tes cepat
     TEST_FILE = "data/unlabeled/012 Parco - Nero Suprobo.wav" 
-    
     main(TEST_FILE)
