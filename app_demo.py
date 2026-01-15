@@ -3,7 +3,7 @@ import os
 import torch
 import torch.nn.functional as F
 from src.config import Config
-from src.model import ContrastiveModel  # <--- Ganti Import
+from src.model import ContrastiveModel  
 from src.utils import AudioUtil
 
 # KONFIGURASI
@@ -22,7 +22,6 @@ PESAN = {
 def load_model():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
-    # <--- PERUBAHAN DI SINI: Panggil ContrastiveModel dengan mode 'finetune'
     model = ContrastiveModel(num_classes=len(LABELS), mode='finetune')
     
     if os.path.exists(MODEL_PATH):
