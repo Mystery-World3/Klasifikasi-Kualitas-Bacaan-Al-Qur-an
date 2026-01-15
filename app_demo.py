@@ -46,7 +46,7 @@ def predict_audio(file_path, model, device):
     input_tensor = input_tensor.unsqueeze(0).to(device)
 
     with torch.no_grad():
-        logits = model(input_tensor) # Output langsung logits karena mode='finetune'
+        logits = model(input_tensor) 
         probs = F.softmax(logits, dim=1)
         max_prob, predicted_idx = torch.max(probs, 1)
         

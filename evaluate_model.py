@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader
 from src.config import Config
 from src.model import ContrastiveModel
 from src.utils import AudioUtil
-from train import LabeledDataset, LABELS  # Import dataset dari script train
+from train import LabeledDataset, LABELS  
 
 # SETUP
 MODEL_PATH = "models/final_model_skripsi.pth"

@@ -21,7 +21,6 @@ class ContrastiveModel(nn.Module):
         self.backbone.fc = nn.Identity()
 
         # 2. Projection Head (Dipakai saat Stage 1: Pre-train)
-        # Tugas: Memproyeksikan fitur ke ruang dimensi lain untuk dihitung loss-nya
         self.projection_head = nn.Sequential(
             nn.Linear(num_features, 256),
             nn.ReLU(),

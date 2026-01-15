@@ -33,7 +33,6 @@ def check_dataset_structure():
 
 def check_preprocessing():
     print("\n--- 2. Cek Preprocessing (Audio -> Spectrogram) ---")
-    # Cari satu file sembarang untuk dites
     sample_files = glob.glob("data/labeled/**/*.wav", recursive=True)
     
     if not sample_files:
@@ -44,7 +43,6 @@ def check_preprocessing():
     print(f"🧪 Menguji file: {os.path.basename(test_file)}")
     
     try:
-        # Panggil fungsi preprocess dari utils.py
         tensor = AudioUtil.preprocess(test_file)
         
         if tensor is not None:
@@ -52,8 +50,7 @@ def check_preprocessing():
             print(f"   Shape Tensor: {tensor.shape}") 
             print("   (Harus [1, N_MELS, Time]) -> Contoh: [1, 128, 130]")
             
-            # Cek dimensi
-            if tensor.shape[0] == 1 and tensor.shape[1] == Config.N_MELS:
+                if tensor.shape[0] == 1 and tensor.shape[1] == Config.N_MELS:
                 print("   Status: ✅ Dimensi Valid untuk ResNet")
             else:
                 print("   Status: ❌ Dimensi Aneh (Cek config.py)")

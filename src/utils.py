@@ -38,7 +38,7 @@ class AudioUtil:
             n_fft=Config.N_FFT,
             hop_length=Config.HOP_LENGTH
         )
-        # Convert ke Log Scale (dB) dan Normalisasi 0-1
+        # Convert to Log Scale (dB) dan Normalisasi 0-1
         log_spec = librosa.power_to_db(spec, ref=np.max)
         norm_spec = (log_spec - log_spec.min()) / (log_spec.max() - log_spec.min() + 1e-6)
         return norm_spec
@@ -51,7 +51,7 @@ class AudioUtil:
         
         sig = AudioUtil.pad_trunc(sig, Config.N_SAMPLES)
         
-        # Augmentasi Sederhana untuk Contrastive Learning (Stage 1)
+        # Simple Augmentation for Contrastive Learning (Stage 1)
         if add_noise:
             noise = np.random.randn(len(sig)) * 0.005
             sig = sig + noise

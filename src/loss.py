@@ -5,7 +5,7 @@ import torch.nn as nn
 class NTXentLoss(nn.Module):
     """
     Normalized Temperature-scaled Cross Entropy Loss.
-    Digunakan untuk mengukur kemiripan antar representasi fitur.
+    untuk mengukur kemiripan antar representasi fitur.
     """
     def __init__(self, batch_size, temperature=0.5, device='cpu'):
         super().__init__()

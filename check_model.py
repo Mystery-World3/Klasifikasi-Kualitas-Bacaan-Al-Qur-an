@@ -21,19 +21,19 @@ def test_classifier_model():
     # Bentuk: (Batch Size, Channel, Tinggi/Freq, Lebar/Waktu)
     # ResNet butuh 4D Tensor.
     batch_size = 2
-    channels = 1 # Audio spectrogram cuma 1 channel (hitam putih)
-    height = Config.N_MELS # Contoh: 128
-    width = 200 # Panjang waktu (time steps)
+    channels = 1 
+    height = Config.N_MELS 
+    width = 200 
     
     dummy_input = torch.randn(batch_size, channels, height, width)
     print(f"📉 Input Dummy Shape: {dummy_input.shape} (Batch, Ch, Mel, Time)")
     
-    # 3. Masukkan ke Model (Forward Pass)
+    # 3. Insert into Model (Forward Pass)
     try:
         output = model(dummy_input)
         print(f"📈 Output Logits Shape: {output.shape}")
         
-        # Cek apakah outputnya sesuai (Batch Size, 5 Kelas)
+        #Check if the output is appropriate (Batch Size, 5 Classes)
         expected_shape = (batch_size, 5)
         if output.shape == expected_shape:
             print(f"✅ Tes Sukses! Output shape sesuai {expected_shape}")
