@@ -9,7 +9,9 @@ class ContrastiveModel(nn.Module):
         self.mode = mode
         
         # 1. Encoder Utama (ResNet-18)
-        self.backbone = models.resnet18(pretrained=True)
+        self.backbone = models.resnet18(
+            weights=models.ResNet18_Weights.DEFAULT
+        )
         
         # Ubah input channel jadi 1 (karena Spectrogram hitam putih)
         self.backbone.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)

@@ -8,67 +8,94 @@ from src.config import Config
 
 class ContrastivePretrainDataset(Dataset):
     """
-    Dataset untuk Fase Pre-training (Unlabeled).
-    Output: (View1, View2) -> Dua versi augmentasi dari audio yang sama.
+    Dataset untuk Stage 1 (Semi-Supervised Contrastive Learning)
+    Menghasilkan dua augmentasi dari audio yang sama.
     """
+
     def __init__(self, data_path):
-        # Search for all .wav files in the folder
+
         self.files = glob.glob(os.path.join(data_path, "*.wav"))
-        if len(self.files) == 0:
-            print(f"Peringatan: Tidak ada file .wav ditemukan di {data_path}")
+
+        print(f"Jumlah data unlabeled : {len(self.files)}")
 
     def __len__(self):
+
         return len(self.files)
 
     def __getitem__(self, idx):
-        audio_file = self.files[idx]
-        
-        # 1. Load Audio
-        sig = AudioUtil.open_audio(audio_file, Config.SAMPLE_RATE)
-        sig = AudioUtil.rechannel(sig)
-        sig = AudioUtil.pad_trunc(sig, Config.N_SAMPLES)
-        
-        # 2. create View 1 (First Augmentation)
-        aug1 = AudioUtil.time_shift(sig)
-        aug1 = torch.tensor(aug1, dtype=torch.float32)
 
-        # 3. create View 2 (Augmentasi Kedua)
-        aug2 = AudioUtil.add_noise(sig)
-        aug2 = AudioUtil.time_shift(aug2) 
-        aug2 = torch.tensor(aug2, dtype=torch.float32)
+        audio_path = self.files[idx]
 
-        return aug1, aug2
+        view1 = AudioUtil.preprocess(
+            audio_path,
+            add_noise=False,
+            shift=True
+        )
+
+        view2 = AudioUtil.preprocess(
+            audio_path,
+            add_noise=True,
+            shift=True
+        )
+
+        if view1 is None or view2 is None:
+
+            dummy = torch.zeros(1, Config.N_MELS, 130)
+
+            return dummy, dummy
+
+        return view1, view2
 
 class FineTuneDataset(Dataset):
-    """
-    Dataset untuk Fase Klasifikasi (Labeled).
-    Output: (Audio, Label)
-    """
     def __init__(self, data_path):
+
         self.files = []
+
         self.labels = []
-        # Mapping folder labels to numbers
+
         self.class_map = {
-            'mumtaz': 0, 'jayyid_jiddan': 1, 'jayyid': 2, 'maqbul': 3, 'rosib': 4
+
+            "mumtaz":0,
+            "jayyid_jiddan":1,
+            "jayyid":2,
+            "maqbul":3,
+            "rosib":4
+
         }
-        
-        # Loop each class folder
-        for class_name, label_idx in self.class_map.items():
-            folder_path = os.path.join(data_path, class_name)
-            wav_files = glob.glob(os.path.join(folder_path, "*.wav"))
+
+        for class_name, label in self.class_map.items():
+
+            folder = os.path.join(data_path, class_name)
+
+            wav_files = glob.glob(
+                os.path.join(folder, "*.wav")
+            )
+
             self.files.extend(wav_files)
-            self.labels.extend([label_idx] * len(wav_files))
+
+            self.labels.extend(
+                [label] * len(wav_files)
+            )
+
+        print(f"Jumlah data labeled : {len(self.files)}")
 
     def __len__(self):
         return len(self.files)
 
     def __getitem__(self, idx):
-        audio_file = self.files[idx]
+
+        audio_path = self.files[idx]
         label = self.labels[idx]
-        
-        # Load Audio
-        sig = AudioUtil.open_audio(audio_file, Config.SAMPLE_RATE)
-        sig = AudioUtil.rechannel(sig)
-        sig = AudioUtil.pad_trunc(sig, Config.N_SAMPLES)
-        
-        return torch.tensor(sig, dtype=torch.float32), torch.tensor(label, dtype=torch.long)
+
+        spec = AudioUtil.preprocess(
+            audio_path,
+            add_noise=False,
+            shift=False
+        )
+
+        if spec is None:
+            spec = torch.zeros(1, Config.N_MELS, 130)
+        return spec, torch.tensor(
+        label,
+        dtype=torch.long
+        )
