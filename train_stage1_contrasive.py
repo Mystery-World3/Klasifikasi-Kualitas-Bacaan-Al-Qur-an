@@ -68,6 +68,9 @@ def train_one_seed(seed):
         pin_memory=Config.PIN_MEMORY
     )
     
+    print("Dataset berhasil dibuat")
+    print("Jumlah batch :", len(loader))
+    
     # Init Model mode 'pretrain'
     model = ContrastiveModel(mode='pretrain').to(device)
     loss_fn = NTXentLoss(Config.BATCH_SIZE, device=device)
@@ -121,14 +124,14 @@ def train_one_seed(seed):
                     f"encoder_seed_{seed}.pth"
                 )
             )
-            print(
-                f"Best Encoder disimpan : encoder_seed_{seed}.pth"
-            )
+            print(f"Best Encoder disimpan : encoder_seed_{seed}.pth")
+            
         else:
             patience += 1
         
         if patience >= Config.EARLY_STOPPING_PATIENCE:
             print("Early stopping...")
+            
             break
 
     history_df = pd.DataFrame({

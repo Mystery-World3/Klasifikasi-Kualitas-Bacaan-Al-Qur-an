@@ -11,11 +11,11 @@ MODEL_PATH = "models/final_model_skripsi.pth"
 LABELS = ['Mumtaz', 'Jayyid Jiddan', 'Jayyid', 'Maqbul', 'Rosib']
 
 PESAN = {
-    "Mumtaz": "🌟 Luar Biasa! Makhorijul huruf dan tajwid sangat sempurna.",
-    "Jayyid Jiddan": "✅ Sangat Baik. Bacaan lancar dengan kesalahan yang sangat minim.",
-    "Jayyid": "👍 Baik. Sudah memenuhi standar, namun perhatikan detail tajwid.",
-    "Maqbul": "🆗 Cukup. Bacaan dapat dimengerti, namun perlu latihan rutin.",
-    "Rosib": "⚠️ Kurang. Disarankan belajar intensif dengan pembimbing tahsin."
+    "Mumtaz": "Luar Biasa! Makhorijul huruf dan tajwid sangat sempurna.",
+    "Jayyid Jiddan": "Sangat Baik. Bacaan lancar dengan kesalahan yang sangat minim.",
+    "Jayyid": "Baik. Sudah memenuhi standar, namun perhatikan detail tajwid.",
+    "Maqbul": "Cukup. Bacaan dapat dimengerti, namun perlu latihan rutin.",
+    "Rosib": "Kurang. Disarankan belajar intensif dengan pembimbing tahsin."
 }
 
 @st.cache_resource
@@ -56,7 +56,7 @@ def predict_audio(file_path, model, device):
     return class_name, confidence
 
 st.set_page_config(page_title="Tahsin AI", page_icon="🎙️")
-st.title("🎙️ Analisis Kualitas Bacaan Al-Qur'an (Contrastive AI)")
+st.title("Analisis Kualitas Bacaan Al-Qur'an (Contrastive AI)")
 st.markdown("Sistem ini menggunakan **Semi-Supervised Contrastive Learning** untuk hasil yang lebih akurat.")
 
 model, device = load_model()

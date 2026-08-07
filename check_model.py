@@ -12,9 +12,9 @@ def test_classifier_model():
         # UBAH: Panggil ContrastiveModel dengan mode 'finetune'
         # mode='finetune' artinya kita mengetes output klasifikasi (5 kelas)
         model = ContrastiveModel(num_classes=5, mode='finetune')
-        print("✅ Model berhasil diinisialisasi (Mode: Finetune).")
+        print("Model berhasil diinisialisasi (Mode: Finetune).")
     except Exception as e:
-        print(f"❌ Gagal init model: {e}")
+        print(f"Gagal init model: {e}")
         return
 
     # 2. Buat Dummy Input (Pura-pura ini Spectrogram)
@@ -26,22 +26,22 @@ def test_classifier_model():
     width = 200 
     
     dummy_input = torch.randn(batch_size, channels, height, width)
-    print(f"📉 Input Dummy Shape: {dummy_input.shape} (Batch, Ch, Mel, Time)")
+    print(f"Input Dummy Shape: {dummy_input.shape} (Batch, Ch, Mel, Time)")
     
     # 3. Insert into Model (Forward Pass)
     try:
         output = model(dummy_input)
-        print(f"📈 Output Logits Shape: {output.shape}")
+        print(f"Output Logits Shape: {output.shape}")
         
         #Check if the output is appropriate (Batch Size, 5 Classes)
         expected_shape = (batch_size, 5)
         if output.shape == expected_shape:
-            print(f"✅ Tes Sukses! Output shape sesuai {expected_shape}")
+            print(f"Tes Sukses! Output shape sesuai {expected_shape}")
         else:
-            print(f"❌ Tes Gagal! Output shape tidak sesuai.")
+            print(f"Tes Gagal! Output shape tidak sesuai.")
             
     except Exception as e:
-        print(f"❌ Error saat Forward Pass: {e}")
+        print(f"Error saat Forward Pass: {e}")
         print("Tips: Cek apakah layer awal ResNet sudah diubah jadi 1 channel?")
 
 if __name__ == "__main__":

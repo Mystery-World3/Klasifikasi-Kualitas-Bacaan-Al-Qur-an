@@ -40,8 +40,10 @@ class Config:
     LEARNING_RATE = 1e-4
     EPOCHS_PRETRAIN = 30
     EPOCHS_FINETUNE = 30
-    NUM_WORKERS = 4
-    PIN_MEMORY = True
+
+    # Windows + CPU
+    NUM_WORKERS = 0
+    PIN_MEMORY = False
 
     # EARLY STOPPING
     EARLY_STOPPING_PATIENCE = 5

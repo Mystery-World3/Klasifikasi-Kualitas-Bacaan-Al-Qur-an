@@ -8,9 +8,9 @@ file_path = "data/labeled/mumtaz/P001_01.wav"
 
 # Cek dulu filenya ada atau nggak
 if not os.path.exists(file_path):
-    print(f"❌ Yah, file {file_path} nggak ketemu. Cek lagi foldernya Bro!")
+    print(f"File {file_path} nggak ketemu. Cek lagi foldernya Bro!")
 else:
-    print(f"⏳ Memproses file: {file_path}...")
+    print(f"Memproses file: {file_path}...")
     
     # 2. Load audio
     y, sr = librosa.load(file_path, sr=16000)
@@ -30,4 +30,4 @@ else:
     output_nama = "melspectrogram.png"
     plt.savefig(output_nama, dpi=300, bbox_inches='tight')
     
-    print(f"✅ Gambar berhasil di-save dengan nama: {output_nama}")
+    print(f"Gambar berhasil di-save dengan nama: {output_nama}")

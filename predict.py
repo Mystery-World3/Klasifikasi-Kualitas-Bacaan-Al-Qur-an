@@ -18,10 +18,10 @@ def main(audio_path):
         model.to(device)
         model.eval()
     except FileNotFoundError:
-        print("❌ Model belum dilatih! Jalankan train.py dulu.")
+        print("Model belum dilatih! Jalankan train.py dulu.")
         return
 
-    print(f"🔍 Menganalisis: {audio_path}")
+    print(f"Menganalisis: {audio_path}")
     tensor = AudioUtil.preprocess(audio_path, add_noise=False)
     
     if tensor is not None:
@@ -32,11 +32,11 @@ def main(audio_path):
             score, idx = torch.max(prob, 1)
             
         print("-" * 30)
-        print(f"🎯 HASIL: {LABELS[idx.item()]}")
-        print(f"📊 CONFIDENCE: {score.item()*100:.2f}%")
+        print(f"HASIL: {LABELS[idx.item()]}")
+        print(f"CONFIDENCE: {score.item()*100:.2f}%")
         print("-" * 30)
     else:
-        print("❌ Gagal memproses file audio.")
+        print("Gagal memproses file audio.")
 
 if __name__ == "__main__":
     # Ganti path ini untuk tes cepat

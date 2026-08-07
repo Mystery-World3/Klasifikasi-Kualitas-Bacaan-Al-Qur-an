@@ -21,10 +21,10 @@ def load_trained_model():
         model.load_state_dict(torch.load(MODEL_PATH, map_location=device))
         model.to(device)
         model.eval()
-        print(f"✅ Model Contrastive dimuat di {device}")
+        print(f"Model Contrastive dimuat di {device}")
         return model, device
     else:
-        print(f"❌ Error: Model tidak ditemukan di {MODEL_PATH}")
+        print(f"Error: Model tidak ditemukan di {MODEL_PATH}")
         return None, None
 
 def predict_single_file(file_path, model, device):
@@ -64,7 +64,7 @@ if __name__ == "__main__":
     
     if model:
         files = glob.glob(os.path.join(INPUT_FOLDER, "*.wav"))
-        print(f"📂 Memproses {len(files)} file...")
+        print(f"Memproses {len(files)} file...")
         
         results = []
         for i, f in enumerate(files):
@@ -75,4 +75,4 @@ if __name__ == "__main__":
         if results:
             df = pd.DataFrame(results)
             df.to_csv(OUTPUT_CSV, index=False)
-            print(f"\n✅ Selesai! Cek file: {OUTPUT_CSV}")
+            print(f"\nSelesai! Cek file: {OUTPUT_CSV}")

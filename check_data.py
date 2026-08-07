@@ -12,7 +12,7 @@ def check_dataset_structure():
     
     total_files = 0
     if not os.path.exists(root_dir):
-        print(f"❌ Error: Folder {root_dir} tidak ditemukan!")
+        print(f"Error: Folder {root_dir} tidak ditemukan!")
         return
 
     for label in labels:
@@ -21,13 +21,13 @@ def check_dataset_structure():
             files = glob.glob(os.path.join(path, "*.wav"))
             count = len(files)
             total_files += count
-            print(f"   📂 {label}: {count} file audio")
+            print(f"{label}: {count} file audio")
         else:
-            print(f"   ⚠️ Warning: Folder {label} belum dibuat.")
+            print(f"Warning: Folder {label} belum dibuat.")
     
-    print(f"✅ Total File Audio: {total_files}")
+    print(f"Total File Audio: {total_files}")
     if total_files == 0:
-        print("   ❌ Peringatan: Tidak ada data untuk dilatih!")
+        print("Peringatan: Tidak ada data untuk dilatih!")
     print("-" * 30)
     return total_files > 0
 
@@ -36,29 +36,29 @@ def check_preprocessing():
     sample_files = glob.glob("data/labeled/**/*.wav", recursive=True)
     
     if not sample_files:
-        print("❌ Tidak ada file wav untuk dites preprocessing.")
+        print("Tidak ada file wav untuk dites preprocessing.")
         return
 
     test_file = sample_files[0]
-    print(f"🧪 Menguji file: {os.path.basename(test_file)}")
+    print(f"Menguji file: {os.path.basename(test_file)}")
     
     try:
         tensor = AudioUtil.preprocess(test_file)
         
         if tensor is not None:
-            print(f"✅ Berhasil load & convert!")
+            print(f"Berhasil load & convert!")
             print(f"   Shape Tensor: {tensor.shape}") 
             print("   (Harus [1, N_MELS, Time]) -> Contoh: [1, 128, 130]")
             
                 if tensor.shape[0] == 1 and tensor.shape[1] == Config.N_MELS:
-                print("   Status: ✅ Dimensi Valid untuk ResNet")
+                print("   Status: Dimensi Valid untuk ResNet")
             else:
-                print("   Status: ❌ Dimensi Aneh (Cek config.py)")
+                print("   Status: Dimensi Aneh (Cek config.py)")
         else:
-            print("❌ Gagal preprocess (Return None)")
+            print("Gagal preprocess (Return None)")
             
     except Exception as e:
-        print(f"❌ Error saat preprocessing: {e}")
+        print(f"Error saat preprocessing: {e}")
 
 if __name__ == "__main__":
     if check_dataset_structure():
