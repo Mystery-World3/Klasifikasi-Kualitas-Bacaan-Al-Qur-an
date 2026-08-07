@@ -58,7 +58,7 @@ class AudioUtil:
     def time_shift(sig):
 
         shift = int(
-            random.uniform(-0.2,0.2) * len(sig)
+            random.uniform(-0.15, 0.15) * len(sig)
         )
 
         sig = np.roll(sig, shift)
@@ -69,7 +69,8 @@ class AudioUtil:
     @staticmethod
     def add_noise(sig):
         noise = np.random.randn(len(sig))
-        sig = sig + 0.005 * noise
+        noise = noise / np.max(np.abs(noise))
+        sig = sig + 0.003 * noise
         return sig
 
     # MEL SPECTROGRAM
