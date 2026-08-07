@@ -47,15 +47,13 @@ def check_preprocessing():
         
         if tensor is not None:
             print(f"Berhasil load & convert!")
-            print(f"   Shape Tensor: {tensor.shape}") 
-            print("   (Harus [1, N_MELS, Time]) -> Contoh: [1, 128, 130]")
-            
-                if tensor.shape[0] == 1 and tensor.shape[1] == Config.N_MELS:
-                print("   Status: Dimensi Valid untuk ResNet")
+            print(f"Shape Tensor : {tensor.shape}")
+
+            if tensor.shape[0] == 1 and tensor.shape[1] == Config.N_MELS:
+                print("Status : VALID")
+
             else:
-                print("   Status: Dimensi Aneh (Cek config.py)")
-        else:
-            print("Gagal preprocess (Return None)")
+                print("Status : SALAH")
             
     except Exception as e:
         print(f"Error saat preprocessing: {e}")

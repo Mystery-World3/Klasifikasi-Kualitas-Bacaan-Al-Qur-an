@@ -7,7 +7,10 @@ from src.model import ContrastiveModel
 from src.utils import AudioUtil
 
 # konfiguration
-MODEL_PATH = "models/final_model_skripsi.pth"
+MODEL_PATH = os.path.join(
+    Config.MODEL_DIR,
+    "classifier_seed_42.pth"
+)
 LABELS = ['Mumtaz', 'Jayyid Jiddan', 'Jayyid', 'Maqbul', 'Rosib']
 
 PESAN = {

@@ -11,7 +11,11 @@ import numpy as np
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(BASE_DIR)
 
-MODEL_PATH = os.path.join(BASE_DIR, "models", "final_model_skripsi.pth")
+MODEL_PATH = os.path.join(
+    BASE_DIR,
+    "models",
+    "classifier_seed_42.pth"
+)
 DATA_DIR = os.path.join(BASE_DIR, "data", "labeled")
 OUTPUT_IMG = os.path.join(BASE_DIR, "Plot_embeddings.png")
 

@@ -4,7 +4,10 @@ import torch.nn.functional as F
 from src.model import ContrastiveModel  # <--- Ganti Import
 from src.utils import AudioUtil
 
-MODEL_PATH = "models/final_model_skripsi.pth"
+MODEL_PATH = os.path.join(
+    "models",
+    "classifier_seed_42.pth"
+)
 LABELS = ['Mumtaz', 'Jayyid Jiddan', 'Jayyid', 'Maqbul', 'Rosib']
 
 def main(audio_path):

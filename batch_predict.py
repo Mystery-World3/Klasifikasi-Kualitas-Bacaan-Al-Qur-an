@@ -9,7 +9,10 @@ from src.utils import AudioUtil
 
 INPUT_FOLDER = "data/unlabeled"       
 OUTPUT_CSV = "laporan_hasil_prediksi.csv"
-MODEL_PATH = "models/final_model_skripsi.pth" 
+MODEL_PATH = os.path.join(
+    Config.MODEL_DIR,
+    "classifier_seed_42.pth"
+)
 LABELS = ['Mumtaz', 'Jayyid Jiddan', 'Jayyid', 'Maqbul', 'Rosib']
 
 def load_trained_model():
