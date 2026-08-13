@@ -108,7 +108,7 @@ if uploaded_file and model:
     
     st.audio(temp_filename, format='audio/wav')
     
-    if st.button("🔍 Analisis Sekarang"):
+    if st.button("Analisis Sekarang"):
         with st.spinner('Sedang menganalisis fitur audio...'):
             prediksi, akurasi, rincian = predict_audio_sliding_window(temp_filename, model, device)
             
@@ -127,7 +127,7 @@ if uploaded_file and model:
                 # Tampilkan rincian performa tiap potongan detik
                 with st.expander("Lihat Rincian Analisis per 3 Detik"):
                     for i, (label_potongan, conf_potongan) in enumerate(rincian):
-                        st.write(f"⏱️ Detik ke-{i*3} - {(i+1)*3} : **{label_potongan}** ({conf_potongan:.1f}%)")
+                        st.write(f"Detik ke-{i*3} - {(i+1)*3} : **{label_potongan}** ({conf_potongan:.1f}%)")
             else:
                 st.error("Gagal memproses audio.")
             

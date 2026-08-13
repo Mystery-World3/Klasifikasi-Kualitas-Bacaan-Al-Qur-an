@@ -15,11 +15,11 @@ pandas
 scikit-learn
 openpyxl
 
-# Web App / UI (Streamlit)
+# Web App / UI 
 streamlit
 watchdog
 
-# Visualization (Opsional, untuk plot grafik)
+# Visualization 
 matplotlib
 seaborn
 
