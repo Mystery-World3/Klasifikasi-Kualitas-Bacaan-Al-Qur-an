@@ -1,132 +1,75 @@
-import torch
-import torch.nn as nn
 import os
-import sys
-import glob
+import torch
+import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.manifold import TSNE
-import numpy as np
-
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(BASE_DIR)
-
-MODEL_PATH = os.path.join(
-    BASE_DIR,
-    "models",
-    "classifier_seed_42.pth"
-)
-DATA_DIR = os.path.join(BASE_DIR, "data", "labeled")
-OUTPUT_IMG = os.path.join(BASE_DIR, "Plot_embeddings.png")
-
-from src.utils import AudioUtil
+from torch.utils.data import DataLoader
+from src.config import Config
 from src.model import ContrastiveModel
+from src.dataset import FineTuneDataset
 
-def plot_tsne():
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print(f"Memulai visualisasi Embedding Space Tahsin di {device}...")
+DEVICE = Config.DEVICE
+MODEL_DIR = Config.MODEL_DIR
+FIGURE_DIR = Config.FIGURE_DIR
+LABELS = ["MUMTAZ", "JAYYID_JIDDAN", "JAYYID", "MAQBUL", "RASIB"]
 
-    # 1. Cek Folder Data
-    if not os.path.exists(DATA_DIR):
-        print(f"Error: Folder {DATA_DIR} tidak ditemukan.")
-        return
+print(f"Memulai visualisasi Embedding Space Tahsin di {DEVICE}...")
 
-    CLASSES = sorted([d for d in os.listdir(DATA_DIR) if os.path.isdir(os.path.join(DATA_DIR, d))])
-    
-    if len(CLASSES) == 0:
-        print(f"Error: Tidak ada folder kategori di dalam {DATA_DIR}.")
-        return
+PRECOMPUTED_LABELED = "/kaggle/working/precomputed_labeled"
+if not os.path.exists(PRECOMPUTED_LABELED):
+    print(f"Error: Folder {PRECOMPUTED_LABELED} tidak ditemukan.")
+    exit()
+
+dataset = FineTuneDataset(PRECOMPUTED_LABELED)
+loader = DataLoader(dataset, batch_size=64, shuffle=False)
+
+seed = Config.DEFAULT_SEED
+model_path = os.path.join(MODEL_DIR, f"classifier_seed_{seed}.pth")
+
+model = ContrastiveModel(num_classes=len(LABELS), mode='finetune').to(DEVICE)
+
+if os.path.exists(model_path):
+    print(f"Load model terbaik dari: {model_path}")
+    model.load_state_dict(torch.load(model_path, map_location=DEVICE))
+else:
+    print(f"Model classifier_seed_{seed}.pth belum ada! Pastikan sudah run train.py sampai selesai.")
+    exit()
+
+model.eval()
+
+all_embeddings = []
+all_labels = []
+
+print("Mengekstrak embeddings dari ResNet18...")
+with torch.no_grad():
+    for inputs, targets in loader:
+        inputs = inputs.to(DEVICE)
         
-    print(f"ℹKategori yang diproses: {CLASSES}")
-
-    # 2. Load Model Final
-    model = ContrastiveModel(num_classes=len(CLASSES), mode='finetune').to(device)
-    
-    if os.path.exists(MODEL_PATH):
-        print(f"Memuat model: {os.path.basename(MODEL_PATH)}")
-        model.load_state_dict(torch.load(MODEL_PATH, map_location=device))
-        model.eval()
-    else:
-        print(f"Error: File model {MODEL_PATH} belum ada. Latih model dulu.")
-        return
-
-    model.classifier_head = nn.Identity()
-    print("Layer classifier_head di-reset untuk ekstraksi fitur.")
-
-    # 3. Mengumpulkan Data & Ekstrak Fitur
-    embeddings = []
-    labels = []
-
-    print(f"Memproses file audio Tahsin...")
-
-    for cat in CLASSES:
-        files = glob.glob(os.path.join(DATA_DIR, cat, "*.wav"))
-        print(f"Mengekstrak {len(files)} file dari kategori: {cat}...")
+        features = model.backbone(inputs)
+        features = torch.flatten(features, 1)
         
-        # BENAR: Harus menjorok ke dalam, biar dieksekusi di SETIAP folder kategori
-        with torch.no_grad():
-            for f_path in files:
-                img_tensor = AudioUtil.preprocess(f_path)
-                
-                # Jaga-jaga kalau ada file audio yang rusak/corrupt biar gak error
-                if img_tensor is None:
-                    continue 
-                    
-                img = img_tensor.unsqueeze(0).to(device)
-                fitur = model(img)
-                embeddings.append(fitur.cpu().numpy().flatten())
-                labels.append(cat)
-                
-    embeddings = np.array(embeddings)
-    
-    if embeddings.shape[0] == 0:
-        print("Tidak ada data audio (.wav) yang berhasil diekstrak.")
-        return
+        all_embeddings.append(features.cpu())
+        all_labels.extend(targets.numpy())
 
-    print(f"\nTotal Ekstraksi: {embeddings.shape[0]} data. Dimensi vektor: {embeddings.shape[1]}")
+all_embeddings = torch.cat(all_embeddings, dim=0).numpy()
 
-    # 4. Mengitung t-SNE
-    print("Menghitung t-SNE (Reduksi Dimensi ke 2D)...")
-    nilai_perplexity = min(15, embeddings.shape[0] - 1) 
-    tsne = TSNE(n_components=2, random_state=42, perplexity=nilai_perplexity, max_iter=1000)
-    embeddings_2d = tsne.fit_transform(embeddings)
+print("Menjalankan reduksi dimensi t-SNE (tunggu bentar ya)...")
+tsne = TSNE(n_components=2, random_state=42)
+embeddings_2d = tsne.fit_transform(all_embeddings)
 
-    # 5. Menggambar Plot
-    print("Menggambar Grafik Plot...")
-    plt.figure(figsize=(12, 10))
-    
-    color_mapping = {
-        'mumtaz': '#2ecc71',        
-        'jayyid_jiddan': '#3498db', 
-        'jayyid': '#f1c40f',        
-        'maqbul': '#e67e22',        
-        'rosib': '#e74c3c'          
-    }
-    
-    palette = [color_mapping.get(c, '#95a5a6') for c in CLASSES]
-    
-    sns.scatterplot(
-        x=embeddings_2d[:, 0], 
-        y=embeddings_2d[:, 1],
-        hue=labels,
-        palette=palette,
-        hue_order=CLASSES,
-        s=100,
-        alpha=0.8,
-        edgecolor="w",
-        linewidth=0.5
-    )
-    
-    plt.title('Visualisasi t-SNE: Embedding Kualitas Bacaan Al-Qur\'an', fontsize=16, pad=20)
-    plt.xlabel('t-SNE Dimension 1 (Fitur Laten)', fontsize=12)
-    plt.ylabel('t-SNE Dimension 2 (Fitur Laten)', fontsize=12)
-    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', title="Kategori Tahsin")
-    plt.grid(True, linestyle='--', alpha=0.5)
-    plt.tight_layout()
+df = pd.DataFrame({
+    'x': embeddings_2d[:, 0],
+    'y': embeddings_2d[:, 1],
+    'label': [LABELS[i] for i in all_labels]
+})
 
-    # 6. Simpan Gambar
-    plt.savefig(OUTPUT_IMG, dpi=300, bbox_inches='tight')
-    print(f"\nSelesai! Visualisasi disimpan di: {OUTPUT_IMG}")
+plt.figure(figsize=(10, 8))
+sns.scatterplot(data=df, x='x', y='y', hue='label', palette='Set2', s=60, alpha=0.8)
+plt.title('t-SNE Projection of Audio Embeddings (Tahsin Quality)')
+plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+plt.tight_layout()
 
-if __name__ == "__main__":
-    plot_tsne()
+save_path = os.path.join(FIGURE_DIR, "tsne_embeddings.png")
+plt.savefig(save_path)
+print(f"Plot embedding berhasil disimpan di {save_path}")

@@ -1,4 +1,4 @@
-# 🎙️ Klasifikasi Kualitas Bacaan Al-Qur'an (Tahsin AI)
+# Klasifikasi Kualitas Bacaan Al-Qur'an (Tahsin AI)
 
 > **Skripsi:** Representasi Fitur Audio Tahsin Qiroah Menggunakan Semi-Supervised Contrastive Learning.
 
@@ -8,25 +8,25 @@
 
 Proyek ini adalah sistem berbasis **Deep Learning** yang dikembangkan untuk mengklasifikasikan kualitas bacaan Al-Qur'an (Tahsin) secara otomatis. Sistem ini mampu menganalisis file audio dan memberikan penilaian berdasarkan standar makhorijul huruf dan tajwid.
 
-## 🌐 Live Demo
+## Live Demo
 Cobalah aplikasi ini secara langsung tanpa perlu instalasi:
-👉 **[Klik di sini untuk mencoba Aplikasi](https://klasifikasi-kualitas-bacaan-al-quran.streamlit.app/)**
+ **[Klik di sini untuk mencoba Aplikasi](https://klasifikasi-kualitas-bacaan-al-quran.streamlit.app/)**
 
-## 📋 Fitur Utama
+## Fitur Utama
 
 Sistem ini mengklasifikasikan audio ke dalam 5 kategori kualitas:
-1.  🌟 **Mumtaz** 
-2.  ✅ **Jayyid Jiddan** 
-3.  👍 **Jayyid** 
-4.  🆗 **Maqbul** 
-5.  ⚠️ **Rosib** 
+1.  **Mumtaz** 
+2.  **Jayyid Jiddan** 
+3.  **Jayyid** 
+4.  **Maqbul** 
+5.  **Rosib** 
 
 **Fitur Aplikasi:**
 * **Web Interface (GUI):** Antarmuka berbasis Streamlit yang ramah pengguna untuk menilai rekaman secara langsung.
 * **Batch Prediction:** Fitur untuk memproses ratusan file audio sekaligus dan mengekspor hasil analisisnya ke Excel/CSV.
 * **Audio Preprocessing:** Otomatis melakukan *resampling*, *rechanneling*, dan *padding/truncating* sinyal audio.
 
-## 📂 Struktur Direktori
+## Struktur Direktori
 
 Pastikan struktur folder Anda terlihat seperti ini:
 
@@ -47,7 +47,7 @@ Pastikan struktur folder Anda terlihat seperti ini:
 
 ```
 
-## 🚀 Cara Instalasi
+## Cara Instalasi
 
 1. **Clone Repository ini:**
 ```bash
@@ -80,7 +80,7 @@ pip install -r requirements.txt
 4. **Siapkan Model:**
 Pastikan file model `final_model_skripsi.pth` sudah ada di dalam folder `models/`.
 
-## 💻 Cara Penggunaan
+## Cara Penggunaan
 
 ### 1. Menjalankan Web App (Demo)
 
@@ -118,7 +118,7 @@ python predict.py
 
 *(Pastikan path file audio sudah disesuaikan di dalam script predict.py)*
 
-## 🛠️ Teknologi yang Digunakan
+## Teknologi yang Digunakan
 
 * **Bahasa Pemrograman:** Python
 * **Deep Learning Framework:** PyTorch
@@ -126,7 +126,7 @@ python predict.py
 * **Interface:** Streamlit
 * **Data Manipulation:** Pandas, Numpy
 
-## 👨‍💻 Penulis
+## Penulis
 
 **Muhammad Mishbahul Muflihin**
 

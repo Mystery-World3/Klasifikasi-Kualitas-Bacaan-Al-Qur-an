@@ -1,33 +1,30 @@
-import librosa
-import librosa.display
-import matplotlib.pyplot as plt
-import numpy as np
 import os
+import random
+import glob
+import torch
+import matplotlib.pyplot as plt
 
-file_path = "data/labeled/mumtaz/P001_01.wav"
+PRECOMPUTED_DIR = "/kaggle/working/precomputed_labeled"
 
-# Cek dulu filenya ada atau nggak
-if not os.path.exists(file_path):
-    print(f"File {file_path} nggak ketemu. Cek lagi foldernya Bro!")
-else:
-    print(f"Memproses file: {file_path}...")
-    
-    # 2. Load audio
-    y, sr = librosa.load(file_path, sr=16000)
+if not os.path.exists(PRECOMPUTED_DIR):
+    print("Folder precomputed tidak ditemukan. Run prepare_dataset.py dulu bro.")
+    exit()
 
-    # 3. Hitung Mel-Spectrogram
-    S = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=128, fmax=8000)
-    S_dB = librosa.power_to_db(S, ref=np.max)
+pt_files = glob.glob(os.path.join(PRECOMPUTED_DIR, "*.pt"))
+if len(pt_files) == 0:
+    print("Tidak ada file .pt yang ditemukan.")
+    exit()
 
-    # 4. Menggambar Plot
-    plt.figure(figsize=(10, 4))
-    librosa.display.specshow(S_dB, x_axis='time', y_axis='mel', sr=sr, fmax=8000, cmap='magma')
-    plt.colorbar(format='%+2.0f dB')
-    plt.title('Visualisasi Mel-Spectrogram')
-    plt.tight_layout()
+sample_file = random.choice(pt_files)
+tensor = torch.load(sample_file)
 
-    # 5. Save Gambar
-    output_nama = "melspectrogram.png"
-    plt.savefig(output_nama, dpi=300, bbox_inches='tight')
-    
-    print(f"Gambar berhasil di-save dengan nama: {output_nama}")
+plt.figure(figsize=(8, 6))
+plt.imshow(tensor.squeeze(0).numpy(), origin='lower', aspect='auto', cmap='viridis')
+plt.title(f"Spectrogram (64x64): {os.path.basename(sample_file)}")
+plt.colorbar(format='%+2.0f dB')
+plt.tight_layout()
+
+os.makedirs("figures", exist_ok=True)
+save_path = os.path.join("figures", "sample_spectrogram.png")
+plt.savefig(save_path)
+print(f"Spectrogram berhasil di-generate dan disimpan di {save_path}")
