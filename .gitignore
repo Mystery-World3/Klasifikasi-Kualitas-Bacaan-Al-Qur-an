@@ -1,19 +1,51 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Notebook
+.ipynb_checkpoints/
+
+# Virtual Environment
 venv/
 env/
-.env
+.venv/
 
-__pycache__/
-*.py[cod]
-
-
-data/
-datasets/
-
-models/*.pth
-*.pt
-*.pkl
-
-.DS_Store
-Thumbs.db
-
+# VSCode
 .vscode/
+
+# PyCharm
+.idea/
+
+# MacOS
+.DS_Store
+
+# Logs
+*.log
+
+# Model
+models/
+
+# Dataset
+data/
+
+
+# Output
+results/
+history/
+figures/
+splits/
+
+# Kaggle
+working/
+input/
+
+# Cache
+.cache/
+
+# Torch
+*.pth
+
+# CSV Result
+summary_result.csv

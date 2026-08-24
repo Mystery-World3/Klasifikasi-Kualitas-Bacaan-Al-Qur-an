@@ -1,5 +1,6 @@
 import os
 import glob
+import json
 import torch
 from torch.utils.data import Dataset
 
@@ -63,3 +64,59 @@ class FineTuneDataset(Dataset):
             spec = torch.zeros(1, 64, 64)
             
         return spec, torch.tensor(label, dtype=torch.long)
+
+class SplitFineTuneDataset(Dataset):
+
+    def __init__(self, split_json, mode="train"):
+
+        with open(split_json, "r") as f:
+            split = json.load(f)
+
+        self.files = split[mode]
+
+        self.label_map = {
+            "MUMTAZ": 0,
+            "JAYYID_JIDDAN": 1,
+            "JAYYID": 2,
+            "MAQBUL": 3,
+            "RASIB": 4
+        }
+
+    def __len__(self):
+        return len(self.files)
+
+    def __getitem__(self, idx):
+
+        path = self.files[idx]
+
+        feature = torch.load(path)
+
+        if isinstance(feature, dict):
+
+            if "feature" in feature:
+                x = feature["feature"]
+
+            elif "spectrogram" in feature:
+                x = feature["spectrogram"]
+
+            else:
+                x = list(feature.values())[0]
+
+        else:
+            x = feature
+
+        filename = os.path.basename(path)
+
+        label_name = None
+
+        for cls in sorted(self.label_map.keys(), key=len, reverse=True):
+            if filename.startswith(cls):
+                label_name = cls
+                break
+
+        if label_name is None:
+            raise ValueError(f"Label tidak dikenali: {filename}")
+
+        y = self.label_map[label_name]
+
+        return x.float(), torch.tensor(y, dtype=torch.long)

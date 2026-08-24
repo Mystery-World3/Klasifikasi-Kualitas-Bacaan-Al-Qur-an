@@ -6,10 +6,10 @@ import pandas as pd
 from tqdm import tqdm
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 from torch.optim.lr_scheduler import ReduceLROnPlateau
-from torch.utils.data import DataLoader, random_split
+from torch.utils.data import DataLoader
+from src.dataset import SplitFineTuneDataset
 from src.config import Config, set_seed
 from src.model import ContrastiveModel
-from src.dataset import FineTuneDataset
 
 MODEL_DIR = Config.MODEL_DIR
 os.makedirs(MODEL_DIR, exist_ok=True)
@@ -25,7 +25,7 @@ def train_one_seed(seed):
         print(f"SKIPPING SEED {seed} | Fine-tuned model sudah ada di {target_model_path}")
         print("="*60)
         return None
-
+    
     print(f"Memulai Stage 2: Fine-Tuning di {device}")
     set_seed(seed)
     
@@ -34,23 +34,33 @@ def train_one_seed(seed):
         print("Error: Folder precomputed tidak ditemukan.")
         return None
         
-    dataset = FineTuneDataset(PRECOMPUTED_LABELED)
-    train_size = int(0.8 * len(dataset))
-    val_size = len(dataset) - train_size
-    train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
-
+    split_file = os.path.join(
+        Config.SPLIT_DIR,
+        f"seed_{seed}.json"
+    )
+    
+    train_dataset = SplitFineTuneDataset(
+        split_file,
+        mode="train"
+    )
+    
+    val_dataset = SplitFineTuneDataset(
+        split_file,
+        mode="validation"
+    )
+    
     train_loader = DataLoader(train_dataset, batch_size=Config.BATCH_SIZE, shuffle=True, num_workers=Config.NUM_WORKERS, pin_memory=Config.PIN_MEMORY)
     val_loader = DataLoader(val_dataset, batch_size=Config.BATCH_SIZE, shuffle=False, num_workers=Config.NUM_WORKERS, pin_memory=Config.PIN_MEMORY)
-
+    
     model = ContrastiveModel(num_classes=len(LABELS), mode='finetune').to(device)
     pretrained_path = os.path.join(MODEL_DIR, f"encoder_seed_{seed}.pth")
-
+    
     if os.path.exists(pretrained_path):
         model.load_state_dict(torch.load(pretrained_path, map_location=device), strict=False)
     else:
         print("Encoder tidak ditemukan")
         return None
-
+    
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=Config.LEARNING_RATE)
     scheduler = ReduceLROnPlateau(optimizer, mode="max", factor=Config.LR_FACTOR, patience=Config.LR_PATIENCE)
@@ -93,20 +103,26 @@ def train_one_seed(seed):
         print(f"Epoch {epoch+1} | Train Loss: {epoch_loss:.4f} | Val Acc: {val_acc:.2f}%")
         
         seed_history.append({
-            'seed': seed,
-            'epoch': epoch + 1,
-            'train_loss': epoch_loss,
-            'val_acc': val_acc
+            "seed": seed,
+            "epoch": epoch + 1,
+            "train_loss": epoch_loss,
+            "train_acc": acc,
+            "val_loss": val_loss / len(val_loader),
+            "val_acc": val_acc
         })
         
         scheduler.step(val_acc)
         if val_acc > best_acc:
+            print(
+                f"Best validation accuracy: "
+                f"{best_acc:.2f}% -> {val_acc:.2f}%"
+            )
             best_acc = val_acc
             patience = 0
             torch.save(model.state_dict(), target_model_path)
         else:
             patience += 1
-
+            
         if patience >= Config.EARLY_STOPPING_PATIENCE:
             print("Early Stopping")
             break

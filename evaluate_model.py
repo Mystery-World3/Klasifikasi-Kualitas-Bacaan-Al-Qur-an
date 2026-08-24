@@ -9,7 +9,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 from torch.utils.data import DataLoader
 from src.config import Config
 from src.model import ContrastiveModel
-from src.dataset import FineTuneDataset
+from src.dataset import SplitFineTuneDataset
 
 # SETUP
 MODEL_DIR = Config.MODEL_DIR
@@ -24,8 +24,6 @@ DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 def evaluate():
     print("Memulai Evaluasi Model...")
     all_result = []
-
-    PRECOMPUTED_LABELED = "/kaggle/working/precomputed_labeled"
 
     for seed in Config.SEEDS:
         print("=" * 60)
@@ -43,13 +41,28 @@ def evaluate():
         model.to(DEVICE)
         model.eval()
 
-        dataset = FineTuneDataset(PRECOMPUTED_LABELED)
-        loader = DataLoader(dataset, batch_size=Config.BATCH_SIZE, shuffle=False)
+        split_json = os.path.join(
+            Config.SPLIT_DIR,
+            f"seed_{seed}.json"
+        )
+
+        dataset = SplitFineTuneDataset(
+            split_json=split_json,
+            mode="test"
+        )
+
+        loader = DataLoader(
+            dataset,
+            batch_size=Config.BATCH_SIZE,
+            shuffle=False
+        )
+
+        print(f"Jumlah data test : {len(dataset)}")
     
         y_true = []
         y_pred = []
 
-        print("Sedang memproses seluruh data...")
+        print("Sedang memproses data TEST...")
         with torch.no_grad():
             for inputs, targets in loader:
                 inputs = inputs.to(DEVICE)
