@@ -53,7 +53,7 @@ Model mengklasifikasikan audio ke dalam 5 kategori:
 | **Jayyid Jiddan** | Kualitas bacaan sangat baik dengan kesalahan relatif minim |
 | **Jayyid** | Kualitas bacaan baik namun masih memerlukan perhatian pada detail tertentu |
 | **Maqbul** | Kualitas bacaan cukup dan masih memerlukan latihan |
-| **Rosib** | Kualitas bacaan memerlukan peningkatan dan latihan lebih lanjut |
+| **Rasib** | Kualitas bacaan memerlukan peningkatan dan latihan lebih lanjut |
 
 ## Metode
 

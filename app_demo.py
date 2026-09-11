@@ -24,7 +24,7 @@ LABELS = [
     "Jayyid Jiddan",
     "Jayyid",
     "Maqbul",
-    "Rosib"
+    "Rasib"
 ]
 
 PESAN = {
@@ -42,7 +42,7 @@ PESAN = {
         "Cukup. Bacaan masih dapat dipahami, namun diperlukan "
         "latihan tahsin secara rutin."
     ),
-    "Rosib": (
+    "Rasib": (
         "Perlu peningkatan. Disarankan melakukan latihan tahsin "
         "secara lebih intensif dengan pembimbing."
     )
