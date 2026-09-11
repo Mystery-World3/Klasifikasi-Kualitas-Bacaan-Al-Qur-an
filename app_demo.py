@@ -48,7 +48,6 @@ PESAN = {
     )
 }
 
-
 # PAGE CONFIG
 st.set_page_config(
     page_title="Tahsin AI",
@@ -56,7 +55,6 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
-
 
 # CUSTOM CSS
 st.markdown(
