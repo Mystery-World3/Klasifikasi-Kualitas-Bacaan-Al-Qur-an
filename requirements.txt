@@ -18,6 +18,8 @@ openpyxl
 # Web App / UI 
 streamlit
 watchdog
+huggingface_hub
+
 
 # Visualization 
 matplotlib

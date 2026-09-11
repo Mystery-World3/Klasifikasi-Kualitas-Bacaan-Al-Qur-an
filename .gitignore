@@ -49,3 +49,6 @@ input/
 
 # CSV Result
 summary_result.csv
+
+# Local Agents / Tooling
+.agents/
