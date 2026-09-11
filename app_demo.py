@@ -237,7 +237,7 @@ except Exception as e:
 st.markdown("---")
 
 st.markdown(
-    '<div class="section-title">📁 Upload Rekaman</div>',
+    '<div class="section-title">Upload Rekaman</div>',
     unsafe_allow_html=True
 )
 
@@ -854,7 +854,7 @@ if uploaded_file is not None:
         with tab3:
 
             st.markdown(
-                "### 🎼 Log Mel Spectrogram"
+                "### Log Mel Spectrogram"
             )
 
             st.write(
