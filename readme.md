@@ -10,7 +10,7 @@ Proyek ini adalah sistem berbasis **Deep Learning** yang dikembangkan untuk meng
 
 ## Live Demo
 Cobalah aplikasi ini secara langsung tanpa perlu instalasi:
- **[Klik di sini untuk mencoba Aplikasi](https://klasifikasi-kualitas-bacaan-al-quran.streamlit.app/)**
+ **[Klik di sini untuk mencoba Aplikasi](https://klasifikasi-kualitas-bacaan-al-qur-an.streamlit.app/)**
 
 ## Fitur Utama
 
