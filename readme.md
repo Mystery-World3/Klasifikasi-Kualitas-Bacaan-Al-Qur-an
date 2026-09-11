@@ -13,7 +13,7 @@ Sistem berbasis **Deep Learning** untuk mengklasifikasikan kualitas bacaan Al-Qu
 
 Coba aplikasi secara langsung:
 
-**[🚀 Buka Tahsin AI](https://klasifikasi-kualitas-bacaan-al-qur-an.streamlit.app/)**
+**[Buka Tahsin AI](https://klasifikasi-kualitas-bacaan-al-qur-an.streamlit.app/)**
 
 Model inference pada aplikasi diambil secara otomatis dari Hugging Face Hub sehingga bobot model tidak perlu disimpan di repository GitHub.
 
@@ -282,9 +282,4 @@ Untuk menjaga konsistensi inference dengan model yang dilatih:
 Program Studi Teknik Informatika  
 Universitas Darussalam Gontor
 
----
 
-**Project:** Klasifikasi Kualitas Bacaan Al-Qur'an  
-**Metode:** Semi-Supervised Contrastive Learning  
-**Feature:** Log Mel Spectrogram  
-**Backbone:** ResNet-18
