@@ -601,7 +601,7 @@ if uploaded_file is not None:
     analyze = st.button(
         "Analisis Bacaan Sekarang",
         type="primary",
-        use_container_width=True
+        width="stretch"
     )
 
     if analyze:
@@ -764,7 +764,7 @@ if uploaded_file is not None:
 
             st.pyplot(
                 fig,
-                use_container_width=True
+                width="stretch"
             )
 
             plt.close(fig)
@@ -772,7 +772,7 @@ if uploaded_file is not None:
             # Probability table
             st.dataframe(
                 probability_df,
-                use_container_width=True,
+                width="stretch",
                 hide_index=True
             )
 
@@ -822,7 +822,7 @@ if uploaded_file is not None:
 
             st.dataframe(
                 distribution_df,
-                use_container_width=True,
+                width="stretch",
                 hide_index=True
             )
 
@@ -842,7 +842,7 @@ if uploaded_file is not None:
 
             st.dataframe(
                 display_df,
-                use_container_width=True,
+                width="stretch",
                 hide_index=True,
                 height=500
             )
@@ -914,7 +914,7 @@ if uploaded_file is not None:
 
                 st.pyplot(
                     fig,
-                    use_container_width=True
+                    width="stretch"
                 )
 
                 plt.close(fig)
