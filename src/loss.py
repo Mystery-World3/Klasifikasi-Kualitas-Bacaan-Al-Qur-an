@@ -25,7 +25,7 @@ class NTXentLoss(nn.Module):
         return mask
 
     def forward(self, z_i, z_j):
-        # z_i dan z_j adalah output vektor dari projection head
+        # z_i dan z_j output vektor dari projection head
         N = 2 * self.batch_size
         z = torch.cat((z_i, z_j), dim=0)
 
