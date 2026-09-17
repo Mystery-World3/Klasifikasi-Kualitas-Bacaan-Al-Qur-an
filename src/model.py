@@ -16,9 +16,6 @@ class ContrastiveModel(nn.Module):
 
         # Untuk training:
         # pretrained=True -> gunakan bobot ImageNet ResNet18
-        #
-        # Untuk inference/deployment:
-        # pretrained=False -> tidak download bobot dari internet
         weights = (
             models.ResNet18_Weights.DEFAULT
             if pretrained
@@ -30,7 +27,7 @@ class ContrastiveModel(nn.Module):
             weights=weights
         )
 
-        # Input spectrogram adalah 1 channel
+        # Input spectrogram 1 channel
         self.backbone.conv1 = nn.Conv2d(
             1,
             64,
