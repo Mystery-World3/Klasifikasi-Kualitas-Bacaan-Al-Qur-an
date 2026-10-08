@@ -15,7 +15,11 @@ class ContrastivePretrainDataset(Dataset):
     def apply_tensor_augment(self, tensor, add_noise=False):
         aug_tensor = tensor.clone()
         shift_amount = torch.randint(-15, 15, (1,)).item()
-        aug_tensor = torch.roll(aug_tensor, shifts=shift_amount, dims=2) 
+        aug_tensor = torch.roll(
+            aug_tensor, 
+            shifts=shift_amount, 
+            dims=2
+        ) 
         if add_noise:
             noise = torch.randn_like(aug_tensor) * 0.05
             aug_tensor = aug_tensor + noise
