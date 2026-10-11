@@ -19,7 +19,7 @@ class ContrastivePretrainDataset(Dataset):
             aug_tensor, 
             shifts=shift_amount, 
             dims=2
-        ) 
+        )   
         if add_noise:
             noise = torch.randn_like(aug_tensor) * 0.05
             aug_tensor = aug_tensor + noise
