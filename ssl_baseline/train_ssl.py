@@ -388,7 +388,6 @@ def create_model():
     # pretrained=True:
     # menggunakan ImageNet pretrained ResNet-18.
     #
-    # Tidak ada encoder hasil contrastive learning.
     #
     # Jadi baseline ini:
     # SSL + Pseudo-Labeling
@@ -1034,9 +1033,6 @@ def train_one_seed(
         "ResNet-18 ImageNet pretrained"
     )
 
-    print(
-        "Tanpa encoder contrastive"
-    )
 
     initial_history, initial_model_path = (
         initial_training(
@@ -1151,9 +1147,6 @@ if __name__ == "__main__":
     )
     print(
         "PSEUDO-LABELING"
-    )
-    print(
-        "WITHOUT CONTRASTIVE LEARNING"
     )
     print("=" * 70)
 
