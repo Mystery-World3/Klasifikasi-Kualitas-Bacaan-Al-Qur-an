@@ -680,7 +680,7 @@ if uploaded_file is not None:
             [
                 "Probabilitas",
                 "Per Potongan",
-                "5Spectrogram"
+                "Log-Mel Spectrogram"
             ]
         )
 
@@ -856,8 +856,7 @@ if uploaded_file is not None:
             )
 
             st.write(
-                "Visualisasi fitur audio yang digunakan "
-                "sebagai input model."
+                "Visualisasi fitur log-Mel yang telah dinormalisasi dan di-resize menjadi 64×64 sebagai input model."
             )
 
             # Select chunk
@@ -889,25 +888,29 @@ if uploaded_file is not None:
                 image = ax.imshow(
                     selected_spectrogram,
                     aspect="auto",
-                    origin="lower"
+                    origin="lower",
+                    extent=[0, Config.DURATION, 0, Config.N_MELS],
+                    cmap="magma",
+                    vmin=0,
+                    vmax=1
                 )
 
                 ax.set_title(
-                    "Log Mel Spectrogram"
+                    "Log-Mel Spectrogram (Input Model 64×64)"
                 )
 
                 ax.set_xlabel(
-                    "Time"
+                    "Waktu (detik)"
                 )
 
                 ax.set_ylabel(
-                    "Mel Frequency"
+                    "Bin frekuensi Mel (64 bin)"
                 )
 
                 fig.colorbar(
                     image,
                     ax=ax,
-                    label="Normalized dB"
+                    label="Nilai log-Mel ternormalisasi (0–1)"
                 )
 
                 fig.tight_layout()
