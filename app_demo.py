@@ -108,7 +108,7 @@ with st.sidebar:
 
         **Semi-Supervised Contrastive Learning**
 
-        - Log Mel Spectrogram
+        - Log-Mel Spectrogram
         - ResNet-18
         - 5 kelas kualitas bacaan
         """
@@ -160,7 +160,7 @@ st.markdown(
     """
     <div class="subtitle">
     Analisis otomatis kualitas bacaan menggunakan
-    <b>Log Mel Spectrogram</b> dan model
+    <b>Log-Mel Spectrogram</b> dan model
     <b>ResNet-18</b> yang dilatih dengan pendekatan
     <b>Semi-Supervised Contrastive Learning</b>.
     </div>
@@ -303,7 +303,7 @@ def audio_to_tensor(audio):
         n_mels=Config.N_MELS
     )
 
-    # Log Mel Spectrogram
+    # Log-Mel Spectrogram
     mel = librosa.power_to_db(
         mel,
         ref=np.max
@@ -852,7 +852,7 @@ if uploaded_file is not None:
         with tab3:
 
             st.markdown(
-                "### Log Mel Spectrogram"
+                "### Log-Mel Spectrogram"
             )
 
             st.write(
@@ -937,5 +937,5 @@ st.markdown("---")
 
 st.caption(
     "Tahsin AI • Semi-Supervised Contrastive Learning "
-    "• Log Mel Spectrogram • ResNet-18"
+    "• Log-Mel Spectrogram • ResNet-18"
 )
