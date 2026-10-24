@@ -108,7 +108,7 @@ with st.sidebar:
 
         **Semi-Supervised Contrastive Learning**
 
-        - Log Mel Spectrogram
+        - Log-Mel Spectrogram
         - ResNet-18
         - 5 kelas kualitas bacaan
         """
@@ -160,7 +160,7 @@ st.markdown(
     """
     <div class="subtitle">
     Analisis otomatis kualitas bacaan menggunakan
-    <b>Log Mel Spectrogram</b> dan model
+    <b>Log-Mel Spectrogram</b> dan model
     <b>ResNet-18</b> yang dilatih dengan pendekatan
     <b>Semi-Supervised Contrastive Learning</b>.
     </div>
@@ -303,7 +303,7 @@ def audio_to_tensor(audio):
         n_mels=Config.N_MELS
     )
 
-    # Log Mel Spectrogram
+    # Log-Mel Spectrogram
     mel = librosa.power_to_db(
         mel,
         ref=np.max
@@ -680,7 +680,7 @@ if uploaded_file is not None:
             [
                 "Probabilitas",
                 "Per Potongan",
-                "5Spectrogram"
+                "Log-Mel Spectrogram"
             ]
         )
 
@@ -852,12 +852,11 @@ if uploaded_file is not None:
         with tab3:
 
             st.markdown(
-                "### Log Mel Spectrogram"
+                "### Log-Mel Spectrogram"
             )
 
             st.write(
-                "Visualisasi fitur audio yang digunakan "
-                "sebagai input model."
+                "Visualisasi fitur log-Mel yang telah dinormalisasi dan di-resize menjadi 64×64 sebagai input model."
             )
 
             # Select chunk
@@ -889,25 +888,29 @@ if uploaded_file is not None:
                 image = ax.imshow(
                     selected_spectrogram,
                     aspect="auto",
-                    origin="lower"
+                    origin="lower",
+                    extent=[0, Config.DURATION, 0, Config.N_MELS],
+                    cmap="magma",
+                    vmin=0,
+                    vmax=1
                 )
 
                 ax.set_title(
-                    "Log Mel Spectrogram"
+                    "Log-Mel Spectrogram (Input Model 64×64)"
                 )
 
                 ax.set_xlabel(
-                    "Time"
+                    "Waktu (detik)"
                 )
 
                 ax.set_ylabel(
-                    "Mel Frequency"
+                    "Bin frekuensi Mel (64 bin)"
                 )
 
                 fig.colorbar(
                     image,
                     ax=ax,
-                    label="Normalized dB"
+                    label="Nilai log-Mel ternormalisasi (0–1)"
                 )
 
                 fig.tight_layout()
@@ -934,5 +937,5 @@ st.markdown("---")
 
 st.caption(
     "Tahsin AI • Semi-Supervised Contrastive Learning "
-    "• Log Mel Spectrogram • ResNet-18"
+    "• Log-Mel Spectrogram • ResNet-18"
 )
