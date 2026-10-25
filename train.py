@@ -34,20 +34,9 @@ def train_one_seed(seed):
         print("Error: Folder precomputed tidak ditemukan.")
         return None
         
-    split_file = os.path.join(
-        Config.SPLIT_DIR,
-        f"seed_{seed}.json"
-    )
-    
-    train_dataset = SplitFineTuneDataset(
-        split_file,
-        mode="train"
-    )
-    
-    val_dataset = SplitFineTuneDataset(
-        split_file,
-        mode="validation"
-    )
+    split_file = os.path.join(Config.SPLIT_DIR, f"seed_{seed}.json")
+    train_dataset = SplitFineTuneDataset(split_file, mode="train")
+    val_dataset = SplitFineTuneDataset(split_file, mode="validation")
     
     train_loader = DataLoader(train_dataset, batch_size=Config.BATCH_SIZE, shuffle=True, num_workers=Config.NUM_WORKERS, pin_memory=Config.PIN_MEMORY)
     val_loader = DataLoader(val_dataset, batch_size=Config.BATCH_SIZE, shuffle=False, num_workers=Config.NUM_WORKERS, pin_memory=Config.PIN_MEMORY)
@@ -73,7 +62,10 @@ def train_one_seed(seed):
         model.train()
         correct, total, total_loss = 0, 0, 0
         for inputs, targets in tqdm(train_loader, desc=f"Seed {seed} | Epoch {epoch+1}"):
-            inputs, targets = inputs.to(device), targets.to(device)
+            # FIX: Tambahan non_blocking=True
+            inputs = inputs.to(device, non_blocking=True)
+            targets = targets.to(device, non_blocking=True)
+            
             optimizer.zero_grad()
             outputs = model(inputs)
             loss = criterion(outputs, targets)
@@ -90,7 +82,9 @@ def train_one_seed(seed):
         val_correct, val_total, val_loss = 0, 0, 0
         with torch.no_grad():
             for inputs, targets in val_loader:
-                inputs, targets = inputs.to(device), targets.to(device)
+                inputs = inputs.to(device, non_blocking=True)
+                targets = targets.to(device, non_blocking=True)
+                
                 outputs = model(inputs)
                 val_loss += criterion(outputs, targets).item()
                 _, pred = torch.max(outputs, 1)
@@ -100,7 +94,8 @@ def train_one_seed(seed):
         val_acc = 100 * val_correct / val_total
         epoch_loss = total_loss / len(train_loader)
         
-        print(f"Epoch {epoch+1} | Train Loss: {epoch_loss:.4f} | Val Acc: {val_acc:.2f}%")
+        # FIX: Tambahin Train Acc di print console biar kelihatan progresnya
+        print(f"Epoch {epoch+1} | Train Loss: {epoch_loss:.4f} | Train Acc: {acc:.2f}% | Val Acc: {val_acc:.2f}%")
         
         seed_history.append({
             "seed": seed,
@@ -113,10 +108,7 @@ def train_one_seed(seed):
         
         scheduler.step(val_acc)
         if val_acc > best_acc:
-            print(
-                f"Best validation accuracy: "
-                f"{best_acc:.2f}% -> {val_acc:.2f}%"
-            )
+            print(f"Best validation accuracy: {best_acc:.2f}% -> {val_acc:.2f}%")
             best_acc = val_acc
             patience = 0
             torch.save(model.state_dict(), target_model_path)

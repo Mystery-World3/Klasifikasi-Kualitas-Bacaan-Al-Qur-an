@@ -53,7 +53,8 @@ def train_one_seed(seed):
         model.train()
         total_loss = 0
         for xi, xj in tqdm(loader, desc=f"Seed {seed} | Epoch {epoch+1}"):
-            xi, xj = xi.to(device), xj.to(device)
+            xi, xj = xi.to(device, non_blocking=True), xj.to(device, non_blocking=True)
+            
             optimizer.zero_grad()
             loss = loss_fn(model(xi), model(xj))
             loss.backward()
@@ -94,7 +95,6 @@ if __name__ == "__main__":
     if all_history:
         csv_path = "history/history_stage1.csv"
         df = pd.DataFrame(all_history)
-        # Jika file sudah ada, append tanpa header. Jika belum, buat baru dengan header.
         if os.path.exists(csv_path):
             df.to_csv(csv_path, mode='a', header=False, index=False)
         else:
